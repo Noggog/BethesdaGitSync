@@ -1,0 +1,49 @@
+﻿<Controls:MetroWindow
+    x:Class="BethesdaGitSync.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:icon="http://metro.mahapps.com/winfx/xaml/iconpacks"
+    xmlns:local="clr-namespace:BethesdaGitSync"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    Title="Mutagen Git Sync"
+    Width="800"
+    Height="450"
+    d:DataContext="{d:DesignInstance local:MainVM,
+                                     IsDesignTimeCreatable=True}"
+    BorderBrush="{DynamicResource AccentColorBrush}"
+    BorderThickness="1"
+    SaveWindowPosition="True"
+    mc:Ignorable="d">
+    <Controls:MetroWindow.RightWindowCommands>
+        <Controls:WindowCommands>
+            <Button Command="{Binding AddCommand}" ToolTip="Add a new mapping">
+                <icon:PackIconFontAwesome Kind="PlusSolid" />
+            </Button>
+            <Button Command="{Binding HelpCommand}" ToolTip="Help and About Information">
+                <icon:PackIconMaterial Kind="HelpCircle" />
+            </Button>
+        </Controls:WindowCommands>
+    </Controls:MetroWindow.RightWindowCommands>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="35" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="35" />
+        </Grid.ColumnDefinitions>
+        <Button Grid.Column="0" ToolTip="Sync selected mappings from Xml folder representation to Bethesda mod format.">
+            <icon:PackIconOcticons Kind="FileBinary" />
+        </Button>
+        <ListBox Grid.Column="1" ItemsSource="{Binding Mappings}">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <local:MappingView />
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+        <Button Grid.Column="2">
+            <icon:PackIconMaterial Kind="Xml" ToolTip="Sync selected mappings from Bethesda mod format to Xml folder representation." />
+        </Button>
+    </Grid>
+</Controls:MetroWindow>

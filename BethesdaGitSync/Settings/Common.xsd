@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="us-ascii"?>
+<xs:schema targetNamespace="GitConverter" elementFormDefault="qualified" xmlns="GitConverter" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+   <xs:complexType name="ValueType">
+      <xs:attribute name="value" use="required" />
+   </xs:complexType>
+</xs:schema>

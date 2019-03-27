@@ -26,10 +26,10 @@
       </RepoListing>
       <RepoListing>
          <Nickname>Mutagen</Nickname>
-         <Sha>240b0b658bee65518381fdd9cf6c8b49f81b0a1e</Sha>
+         <Sha>9994dd19dd19f28e58cf15ac874733b83816fda8</Sha>
          <Path>../Mutagen</Path>
-         <CommitDate>03-18-2019 21:21:10</CommitDate>
-         <Description>Scripts xml folder customized to put script code in a dedicated file</Description>
+         <CommitDate>03-26-2019 21:49:21</CommitDate>
+         <Description>Added a license</Description>
          <Author>Justin Swanson</Author>
       </RepoListing>
    </ParentRepos>

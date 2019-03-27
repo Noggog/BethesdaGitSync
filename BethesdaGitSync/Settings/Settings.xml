@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="us-ascii"?>
+<Loqui xmlns="http://tempuri.org/LoquiSource.xsd">
+  <Object name="Settings" GUID="8769086b-f201-4c59-8d96-1756a9401af5" ID="1">
+    <Fields>
+      <RefList name="Mappings" refName="Mapping" />
+    </Fields>
+  </Object>
+  <Object name="Mapping" GUID="15afffaa-eeaa-40c5-b515-ca20a34e4b76" ID="2">
+    <Fields>
+      <FilePath name="BinaryPath" />
+      <DirectoryPath name="FolderPath" />
+    </Fields>
+  </Object>
+</Loqui>
