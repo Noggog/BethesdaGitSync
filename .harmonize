@@ -1,0 +1,36 @@
+<HarmonizeConfig Version="1">
+   <ParentRepos>
+      <RepoListing>
+         <Nickname>CSharpExt</Nickname>
+         <Sha>8e20dc7929eda0e1b4e73f0c71e7716472038308</Sha>
+         <Path>../CSharpExt</Path>
+         <CommitDate>03-26-2019 21:04:31</CommitDate>
+         <Description>Nuget updates</Description>
+         <Author>Justin Swanson</Author>
+      </RepoListing>
+      <RepoListing>
+         <Nickname>Loqui</Nickname>
+         <Sha>206d3e8a06b99124526731563f0987f6c61b253a</Sha>
+         <Path>../Loqui</Path>
+         <CommitDate>03-26-2019 18:53:56</CommitDate>
+         <Description>Added a license</Description>
+         <Author>Justin Swanson</Author>
+      </RepoListing>
+      <RepoListing>
+         <Nickname>DynamicData</Nickname>
+         <Sha>777d9f0ab67693df8f9746170de6b1df09e16e38</Sha>
+         <Path>../DynamicData</Path>
+         <CommitDate>03-26-2019 21:04:17</CommitDate>
+         <Description>Merge remote-tracking branch 'source/master'</Description>
+         <Author>Justin Swanson</Author>
+      </RepoListing>
+      <RepoListing>
+         <Nickname>Mutagen</Nickname>
+         <Sha>240b0b658bee65518381fdd9cf6c8b49f81b0a1e</Sha>
+         <Path>../Mutagen</Path>
+         <CommitDate>03-18-2019 21:21:10</CommitDate>
+         <Description>Scripts xml folder customized to put script code in a dedicated file</Description>
+         <Author>Justin Swanson</Author>
+      </RepoListing>
+   </ParentRepos>
+</HarmonizeConfig>
