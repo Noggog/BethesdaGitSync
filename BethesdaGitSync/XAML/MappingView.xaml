@@ -6,6 +6,8 @@
     xmlns:icon="http://metro.mahapps.com/winfx/xaml/iconpacks"
     xmlns:local="clr-namespace:BethesdaGitSync"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    d:DataContext="{d:DesignInstance local:MappingVM,
+                                     IsDesignTimeCreatable=True}"
     d:DesignHeight="50"
     d:DesignWidth="300"
     mc:Ignorable="d">
@@ -14,31 +16,50 @@
         Height="30"
         Background="Transparent">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="183*" />
-            <ColumnDefinition Width="91*" />
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="Auto" />
             <ColumnDefinition Width="Auto" />
         </Grid.ColumnDefinitions>
-        <TextBlock
+        <Rectangle
             Grid.Column="0"
-            Grid.ColumnSpan="2"
+            Width="6"
+            Fill="#fc9c16"
+            Visibility="{Binding BinaryPathValid, Converter={StaticResource VisibilityHiddenConverter}, ConverterParameter=False}">
+            <Rectangle.ToolTip>
+                <TextBlock Text="{Binding Mapping.BinaryPath, StringFormat='Binary path did not exist:&#x0a;\{0\}'}" />
+            </Rectangle.ToolTip>
+        </Rectangle>
+        <TextBlock
+            Grid.Column="1"
             Margin="5,4"
             VerticalAlignment="Center"
-            Foreground="White"
-            Text="{Binding Name, FallbackValue=Test}" />
+            Text="{Binding Nickname, FallbackValue=Test}" />
         <Button
-            Grid.Column="2"
+            Grid.Column="3"
             Background="Transparent"
-            BorderThickness="0">
+            BorderThickness="0"
+            Command="{Binding OpenSettingsCommand}">
             <Button.Style>
-                <Style BasedOn="{StaticResource MainButtonStyle}" TargetType="Button">
+                <Style BasedOn="{StaticResource NoBackgroundButtonStyle}" TargetType="Button">
                     <Style.Triggers>
                         <DataTrigger Binding="{Binding IsMouseOver, ElementName=FramingGrid}" Value="False">
-                            <Setter Property="Visibility" Value="Hidden" />
+                            <Setter Property="Opacity" Value="0.1" />
                         </DataTrigger>
                     </Style.Triggers>
                 </Style>
             </Button.Style>
             <icon:PackIconMaterial Kind="Settings" />
         </Button>
+        <Rectangle
+            Grid.Column="4"
+            Width="6"
+            Fill="#fc9c16"
+            Visibility="{Binding FolderPathValid, Converter={StaticResource VisibilityHiddenConverter}, ConverterParameter=False}">
+            <Rectangle.ToolTip>
+                <TextBlock Text="{Binding Mapping.FolderPath, StringFormat='Folder path did not exist:&#x0a;\{0\}'}" />
+            </Rectangle.ToolTip>
+        </Rectangle>
     </Grid>
 </UserControl>

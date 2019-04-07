@@ -41,6 +41,7 @@ namespace BethesdaGitSync
         #region Ctor
         public Settings()
         {
+            _hasBeenSetTracker = new BitArray(((ILoquiObject)this).Registration.FieldCount);
             CustomCtor();
         }
         partial void CustomCtor();
@@ -63,6 +64,14 @@ namespace BethesdaGitSync
         IObservableSetList<Mapping> ISettingsGetter.Mappings => _Mappings;
         #endregion
 
+        #endregion
+        #region LastReferencedDirectory
+        private String _LastReferencedDirectory;
+        public String LastReferencedDirectory
+        {
+            get => this._LastReferencedDirectory;
+            set => this.RaiseAndSetIfChanged(ref this._LastReferencedDirectory, value, nameof(LastReferencedDirectory));
+        }
         #endregion
 
         #region Loqui Getter Interface
@@ -90,11 +99,6 @@ namespace BethesdaGitSync
         IMask<bool> IEqualsMask<Settings>.GetEqualsMask(Settings rhs, EqualsMaskHelper.Include include) => SettingsCommon.GetEqualsMask(this, rhs, include);
         IMask<bool> IEqualsMask<ISettingsGetter>.GetEqualsMask(ISettingsGetter rhs, EqualsMaskHelper.Include include) => SettingsCommon.GetEqualsMask(this, rhs, include);
         #region To String
-        public override string ToString()
-        {
-            return SettingsCommon.ToString(this, printMask: null);
-        }
-
         public string ToString(
             string name = null,
             Settings_Mask<bool> printMask = null)
@@ -126,21 +130,16 @@ namespace BethesdaGitSync
         public bool Equals(Settings rhs)
         {
             if (rhs == null) return false;
-            if (Mappings.HasBeenSet != rhs.Mappings.HasBeenSet) return false;
-            if (Mappings.HasBeenSet)
-            {
-                if (!this.Mappings.SequenceEqual(rhs.Mappings)) return false;
-            }
+            if (!this.Mappings.SequenceEqual(rhs.Mappings)) return false;
+            if (!object.Equals(this.LastReferencedDirectory, rhs.LastReferencedDirectory)) return false;
             return true;
         }
 
         public override int GetHashCode()
         {
             int ret = 0;
-            if (Mappings.HasBeenSet)
-            {
-                ret = HashHelper.GetHashCode(Mappings).CombineHashCode(ret);
-            }
+            ret = HashHelper.GetHashCode(Mappings).CombineHashCode(ret);
+            ret = HashHelper.GetHashCode(LastReferencedDirectory).CombineHashCode(ret);
             return ret;
         }
 
@@ -152,9 +151,11 @@ namespace BethesdaGitSync
         [DebuggerStepThrough]
         public static Settings Create_Xml(
             XElement node,
+            MissingCreate missing = MissingCreate.New,
             Settings_TranslationMask translationMask = null)
         {
             return Create_Xml(
+                missing: missing,
                 node: node,
                 errorMask: null,
                 translationMask: translationMask?.GetCrystal());
@@ -165,10 +166,12 @@ namespace BethesdaGitSync
             XElement node,
             out Settings_ErrorMask errorMask,
             bool doMasks = true,
-            Settings_TranslationMask translationMask = null)
+            Settings_TranslationMask translationMask = null,
+            MissingCreate missing = MissingCreate.New)
         {
             ErrorMaskBuilder errorMaskBuilder = doMasks ? new ErrorMaskBuilder() : null;
             var ret = Create_Xml(
+                missing: missing,
                 node: node,
                 errorMask: errorMaskBuilder,
                 translationMask: translationMask.GetCrystal());
@@ -179,8 +182,18 @@ namespace BethesdaGitSync
         public static Settings Create_Xml(
             XElement node,
             ErrorMaskBuilder errorMask,
-            TranslationCrystal translationMask)
+            TranslationCrystal translationMask,
+            MissingCreate missing = MissingCreate.New)
         {
+            switch (missing)
+            {
+                case MissingCreate.New:
+                case MissingCreate.Null:
+                    if (node == null) return missing == MissingCreate.New ? new Settings() : null;
+                    break;
+                default:
+                    break;
+            }
             var ret = new Settings();
             try
             {
@@ -204,10 +217,12 @@ namespace BethesdaGitSync
 
         public static Settings Create_Xml(
             string path,
+            MissingCreate missing = MissingCreate.New,
             Settings_TranslationMask translationMask = null)
         {
-            var node = XDocument.Load(path).Root;
+            var node = System.IO.File.Exists(path) ? XDocument.Load(path).Root : null;
             return Create_Xml(
+                missing: missing,
                 node: node,
                 translationMask: translationMask);
         }
@@ -215,10 +230,12 @@ namespace BethesdaGitSync
         public static Settings Create_Xml(
             string path,
             out Settings_ErrorMask errorMask,
-            Settings_TranslationMask translationMask = null)
+            Settings_TranslationMask translationMask = null,
+            MissingCreate missing = MissingCreate.New)
         {
-            var node = XDocument.Load(path).Root;
+            var node = System.IO.File.Exists(path) ? XDocument.Load(path).Root : null;
             return Create_Xml(
+                missing: missing,
                 node: node,
                 errorMask: out errorMask,
                 translationMask: translationMask);
@@ -227,10 +244,12 @@ namespace BethesdaGitSync
         public static Settings Create_Xml(
             string path,
             ErrorMaskBuilder errorMask,
-            Settings_TranslationMask translationMask = null)
+            Settings_TranslationMask translationMask = null,
+            MissingCreate missing = MissingCreate.New)
         {
-            var node = XDocument.Load(path).Root;
+            var node = System.IO.File.Exists(path) ? XDocument.Load(path).Root : null;
             return Create_Xml(
+                missing: missing,
                 node: node,
                 errorMask: errorMask,
                 translationMask: translationMask?.GetCrystal());
@@ -238,10 +257,12 @@ namespace BethesdaGitSync
 
         public static Settings Create_Xml(
             Stream stream,
+            MissingCreate missing = MissingCreate.New,
             Settings_TranslationMask translationMask = null)
         {
             var node = XDocument.Load(stream).Root;
             return Create_Xml(
+                missing: missing,
                 node: node,
                 translationMask: translationMask);
         }
@@ -249,10 +270,12 @@ namespace BethesdaGitSync
         public static Settings Create_Xml(
             Stream stream,
             out Settings_ErrorMask errorMask,
-            Settings_TranslationMask translationMask = null)
+            Settings_TranslationMask translationMask = null,
+            MissingCreate missing = MissingCreate.New)
         {
             var node = XDocument.Load(stream).Root;
             return Create_Xml(
+                missing: missing,
                 node: node,
                 errorMask: out errorMask,
                 translationMask: translationMask);
@@ -261,10 +284,12 @@ namespace BethesdaGitSync
         public static Settings Create_Xml(
             Stream stream,
             ErrorMaskBuilder errorMask,
-            Settings_TranslationMask translationMask = null)
+            Settings_TranslationMask translationMask = null,
+            MissingCreate missing = MissingCreate.New)
         {
             var node = XDocument.Load(stream).Root;
             return Create_Xml(
+                missing: missing,
                 node: node,
                 errorMask: errorMask,
                 translationMask: translationMask?.GetCrystal());
@@ -275,9 +300,11 @@ namespace BethesdaGitSync
         #region Xml Copy In
         public void CopyIn_Xml(
             XElement node,
+            MissingCreate missing = MissingCreate.New,
             NotifyingFireParameters cmds = null)
         {
             CopyIn_Xml_Internal(
+                missing: missing,
                 node: node,
                 errorMask: null,
                 translationMask: null,
@@ -288,11 +315,13 @@ namespace BethesdaGitSync
             XElement node,
             out Settings_ErrorMask errorMask,
             Settings_TranslationMask translationMask = null,
+            MissingCreate missing = MissingCreate.New,
             bool doMasks = true,
             NotifyingFireParameters cmds = null)
         {
             ErrorMaskBuilder errorMaskBuilder = doMasks ? new ErrorMaskBuilder() : null;
             CopyIn_Xml_Internal(
+                missing: missing,
                 node: node,
                 errorMask: errorMaskBuilder,
                 translationMask: translationMask?.GetCrystal(),
@@ -304,9 +333,11 @@ namespace BethesdaGitSync
             XElement node,
             ErrorMaskBuilder errorMask,
             TranslationCrystal translationMask,
+            MissingCreate missing = MissingCreate.New,
             NotifyingFireParameters cmds = null)
         {
             LoquiXmlTranslation<Settings>.Instance.CopyIn(
+                missing: missing,
                 node: node,
                 item: this,
                 skipProtected: true,
@@ -317,10 +348,12 @@ namespace BethesdaGitSync
 
         public void CopyIn_Xml(
             string path,
+            MissingCreate missing = MissingCreate.New,
             NotifyingFireParameters cmds = null)
         {
-            var node = XDocument.Load(path).Root;
+            var node = System.IO.File.Exists(path) ? XDocument.Load(path).Root : null;
             this.CopyIn_Xml(
+                missing: missing,
                 node: node,
                 cmds: cmds);
         }
@@ -329,11 +362,13 @@ namespace BethesdaGitSync
             string path,
             out Settings_ErrorMask errorMask,
             Settings_TranslationMask translationMask,
+            MissingCreate missing = MissingCreate.New,
             NotifyingFireParameters cmds = null,
             bool doMasks = true)
         {
-            var node = XDocument.Load(path).Root;
+            var node = System.IO.File.Exists(path) ? XDocument.Load(path).Root : null;
             this.CopyIn_Xml(
+                missing: missing,
                 node: node,
                 errorMask: out errorMask,
                 translationMask: translationMask,
@@ -343,10 +378,12 @@ namespace BethesdaGitSync
 
         public void CopyIn_Xml(
             Stream stream,
+            MissingCreate missing = MissingCreate.New,
             NotifyingFireParameters cmds = null)
         {
             var node = XDocument.Load(stream).Root;
             this.CopyIn_Xml(
+                missing: missing,
                 node: node,
                 cmds: cmds);
         }
@@ -355,11 +392,13 @@ namespace BethesdaGitSync
             Stream stream,
             out Settings_ErrorMask errorMask,
             Settings_TranslationMask translationMask,
+            MissingCreate missing = MissingCreate.New,
             NotifyingFireParameters cmds = null,
             bool doMasks = true)
         {
             var node = XDocument.Load(stream).Root;
             this.CopyIn_Xml(
+                missing: missing,
                 node: node,
                 errorMask: out errorMask,
                 translationMask: translationMask,
@@ -503,6 +542,19 @@ namespace BethesdaGitSync
 
         #endregion
 
+        protected readonly BitArray _hasBeenSetTracker;
+        protected bool GetHasBeenSet(int index)
+        {
+            switch ((Settings_FieldIndex)index)
+            {
+                case Settings_FieldIndex.Mappings:
+                case Settings_FieldIndex.LastReferencedDirectory:
+                    return true;
+                default:
+                    throw new ArgumentException($"Unknown field index: {index}");
+            }
+        }
+
         public Settings Copy(
             Settings_CopyMask copyMask = null,
             ISettingsGetter def = null)
@@ -628,6 +680,9 @@ namespace BethesdaGitSync
                 case Settings_FieldIndex.Mappings:
                     this._Mappings.SetTo((IEnumerable<Mapping>)obj);
                     break;
+                case Settings_FieldIndex.LastReferencedDirectory:
+                    this.LastReferencedDirectory = (String)obj;
+                    break;
                 default:
                     throw new ArgumentException($"Index is out of range: {index}");
             }
@@ -668,6 +723,9 @@ namespace BethesdaGitSync
                 case Settings_FieldIndex.Mappings:
                     obj._Mappings.SetTo((IEnumerable<Mapping>)pair.Value);
                     break;
+                case Settings_FieldIndex.LastReferencedDirectory:
+                    obj.LastReferencedDirectory = (String)pair.Value;
+                    break;
                 default:
                     throw new ArgumentException($"Unknown enum type: {enu}");
             }
@@ -684,12 +742,18 @@ namespace BethesdaGitSync
     public partial interface ISettings : ISettingsGetter, ILoquiClass<ISettings, ISettingsGetter>, ILoquiClass<Settings, ISettingsGetter>
     {
         new ISourceSetList<Mapping> Mappings { get; }
+        new String LastReferencedDirectory { get; set; }
+
     }
 
     public partial interface ISettingsGetter : ILoquiObject
     {
         #region Mappings
         IObservableSetList<Mapping> Mappings { get; }
+        #endregion
+        #region LastReferencedDirectory
+        String LastReferencedDirectory { get; }
+
         #endregion
 
     }
@@ -704,6 +768,7 @@ namespace BethesdaGitSync.Internals
     public enum Settings_FieldIndex
     {
         Mappings = 0,
+        LastReferencedDirectory = 1,
     }
     #endregion
 
@@ -712,18 +777,18 @@ namespace BethesdaGitSync.Internals
     {
         public static readonly Settings_Registration Instance = new Settings_Registration();
 
-        public static ProtocolKey ProtocolKey => ProtocolDefinition_GitConverter.ProtocolKey;
+        public static ProtocolKey ProtocolKey => ProtocolDefinition_BethesdaGitSync.ProtocolKey;
 
         public static readonly ObjectKey ObjectKey = new ObjectKey(
-            protocolKey: ProtocolDefinition_GitConverter.ProtocolKey,
+            protocolKey: ProtocolDefinition_BethesdaGitSync.ProtocolKey,
             msgID: 1,
             version: 0);
 
         public const string GUID = "8769086b-f201-4c59-8d96-1756a9401af5";
 
-        public const ushort AdditionalFieldCount = 1;
+        public const ushort AdditionalFieldCount = 2;
 
-        public const ushort FieldCount = 1;
+        public const ushort FieldCount = 2;
 
         public static readonly Type MaskType = typeof(Settings_Mask<>);
 
@@ -753,6 +818,8 @@ namespace BethesdaGitSync.Internals
             {
                 case "MAPPINGS":
                     return (ushort)Settings_FieldIndex.Mappings;
+                case "LASTREFERENCEDDIRECTORY":
+                    return (ushort)Settings_FieldIndex.LastReferencedDirectory;
                 default:
                     return null;
             }
@@ -765,6 +832,8 @@ namespace BethesdaGitSync.Internals
             {
                 case Settings_FieldIndex.Mappings:
                     return true;
+                case Settings_FieldIndex.LastReferencedDirectory:
+                    return false;
                 default:
                     throw new ArgumentException($"Index is out of range: {index}");
             }
@@ -777,6 +846,8 @@ namespace BethesdaGitSync.Internals
             {
                 case Settings_FieldIndex.Mappings:
                     return true;
+                case Settings_FieldIndex.LastReferencedDirectory:
+                    return false;
                 default:
                     throw new ArgumentException($"Index is out of range: {index}");
             }
@@ -788,6 +859,7 @@ namespace BethesdaGitSync.Internals
             switch (enu)
             {
                 case Settings_FieldIndex.Mappings:
+                case Settings_FieldIndex.LastReferencedDirectory:
                     return false;
                 default:
                     throw new ArgumentException($"Index is out of range: {index}");
@@ -801,6 +873,8 @@ namespace BethesdaGitSync.Internals
             {
                 case Settings_FieldIndex.Mappings:
                     return "Mappings";
+                case Settings_FieldIndex.LastReferencedDirectory:
+                    return "LastReferencedDirectory";
                 default:
                     throw new ArgumentException($"Index is out of range: {index}");
             }
@@ -812,6 +886,7 @@ namespace BethesdaGitSync.Internals
             switch (enu)
             {
                 case Settings_FieldIndex.Mappings:
+                case Settings_FieldIndex.LastReferencedDirectory:
                     return false;
                 default:
                     throw new ArgumentException($"Index is out of range: {index}");
@@ -824,6 +899,7 @@ namespace BethesdaGitSync.Internals
             switch (enu)
             {
                 case Settings_FieldIndex.Mappings:
+                case Settings_FieldIndex.LastReferencedDirectory:
                     return false;
                 default:
                     throw new ArgumentException($"Index is out of range: {index}");
@@ -837,6 +913,8 @@ namespace BethesdaGitSync.Internals
             {
                 case Settings_FieldIndex.Mappings:
                     return typeof(SourceSetList<Mapping>);
+                case Settings_FieldIndex.LastReferencedDirectory:
+                    return typeof(String);
                 default:
                     throw new ArgumentException($"Index is out of range: {index}");
             }
@@ -919,6 +997,23 @@ namespace BethesdaGitSync.Internals
                     errorMask?.PopIndex();
                 }
             }
+            if (copyMask?.LastReferencedDirectory ?? true)
+            {
+                errorMask?.PushIndex((int)Settings_FieldIndex.LastReferencedDirectory);
+                try
+                {
+                    item.LastReferencedDirectory = rhs.LastReferencedDirectory;
+                }
+                catch (Exception ex)
+                when (errorMask != null)
+                {
+                    errorMask.ReportException(ex);
+                }
+                finally
+                {
+                    errorMask?.PopIndex();
+                }
+            }
         }
 
         #endregion
@@ -933,8 +1028,9 @@ namespace BethesdaGitSync.Internals
             switch (enu)
             {
                 case Settings_FieldIndex.Mappings:
-                    obj.Mappings.HasBeenSet = on;
-                    break;
+                case Settings_FieldIndex.LastReferencedDirectory:
+                    if (on) break;
+                    throw new ArgumentException("Tried to unset a field which does not have this functionality." + index);
                 default:
                     throw new ArgumentException($"Index is out of range: {index}");
             }
@@ -951,6 +1047,9 @@ namespace BethesdaGitSync.Internals
                 case Settings_FieldIndex.Mappings:
                     obj.Mappings.Unset();
                     break;
+                case Settings_FieldIndex.LastReferencedDirectory:
+                    obj.LastReferencedDirectory = default(String);
+                    break;
                 default:
                     throw new ArgumentException($"Index is out of range: {index}");
             }
@@ -964,7 +1063,8 @@ namespace BethesdaGitSync.Internals
             switch (enu)
             {
                 case Settings_FieldIndex.Mappings:
-                    return obj.Mappings.HasBeenSet;
+                case Settings_FieldIndex.LastReferencedDirectory:
+                    return true;
                 default:
                     throw new ArgumentException($"Index is out of range: {index}");
             }
@@ -979,6 +1079,8 @@ namespace BethesdaGitSync.Internals
             {
                 case Settings_FieldIndex.Mappings:
                     return obj.Mappings;
+                case Settings_FieldIndex.LastReferencedDirectory:
+                    return obj.LastReferencedDirectory;
                 default:
                     throw new ArgumentException($"Index is out of range: {index}");
             }
@@ -989,6 +1091,7 @@ namespace BethesdaGitSync.Internals
             NotifyingUnsetParameters cmds = null)
         {
             item.Mappings.Unset();
+            item.LastReferencedDirectory = default(String);
         }
 
         public static Settings_Mask<bool> GetEqualsMask(
@@ -1016,6 +1119,7 @@ namespace BethesdaGitSync.Internals
                 rhs.Mappings,
                 (loqLhs, loqRhs) => loqLhs.GetEqualsMask(loqRhs, include),
                 include);
+            ret.LastReferencedDirectory = object.Equals(item.LastReferencedDirectory, rhs.LastReferencedDirectory);
         }
 
         public static string ToString(
@@ -1063,6 +1167,10 @@ namespace BethesdaGitSync.Internals
                     }
                     fg.AppendLine("]");
                 }
+                if (printMask?.LastReferencedDirectory ?? true)
+                {
+                    fg.AppendLine($"LastReferencedDirectory => {item.LastReferencedDirectory}");
+                }
             }
             fg.AppendLine("]");
         }
@@ -1079,6 +1187,7 @@ namespace BethesdaGitSync.Internals
         {
             var ret = new Settings_Mask<bool>();
             ret.Mappings = new MaskItem<bool, IEnumerable<MaskItemIndexed<bool, Mapping_Mask<bool>>>>(item.Mappings.HasBeenSet, item.Mappings.WithIndex().Select((i) => new MaskItemIndexed<bool, Mapping_Mask<bool>>(i.Index, true, i.Item.GetHasBeenSetMask())));
+            ret.LastReferencedDirectory = true;
             return ret;
         }
 
@@ -1129,8 +1238,7 @@ namespace BethesdaGitSync.Internals
             ErrorMaskBuilder errorMask,
             TranslationCrystal translationMask)
         {
-            if (item.Mappings.HasBeenSet
-                && (translationMask?.GetShouldTranslate((int)Settings_FieldIndex.Mappings) ?? true))
+            if ((translationMask?.GetShouldTranslate((int)Settings_FieldIndex.Mappings) ?? true))
             {
                 ListXmlTranslation<Mapping>.Instance.Write(
                     node: node,
@@ -1149,6 +1257,15 @@ namespace BethesdaGitSync.Internals
                             translationMask: listTranslMask);
                     }
                     );
+            }
+            if ((translationMask?.GetShouldTranslate((int)Settings_FieldIndex.LastReferencedDirectory) ?? true))
+            {
+                StringXmlTranslation.Instance.Write(
+                    node: node,
+                    name: nameof(item.LastReferencedDirectory),
+                    item: item.LastReferencedDirectory,
+                    fieldIndex: (int)Settings_FieldIndex.LastReferencedDirectory,
+                    errorMask: errorMask);
             }
         }
 
@@ -1214,6 +1331,32 @@ namespace BethesdaGitSync.Internals
                         errorMask?.PopIndex();
                     }
                     break;
+                case "LastReferencedDirectory":
+                    try
+                    {
+                        errorMask?.PushIndex((int)Settings_FieldIndex.LastReferencedDirectory);
+                        if (StringXmlTranslation.Instance.Parse(
+                            node: node,
+                            item: out String LastReferencedDirectoryParse,
+                            errorMask: errorMask))
+                        {
+                            item.LastReferencedDirectory = LastReferencedDirectoryParse;
+                        }
+                        else
+                        {
+                            item.LastReferencedDirectory = default(String);
+                        }
+                    }
+                    catch (Exception ex)
+                    when (errorMask != null)
+                    {
+                        errorMask.ReportException(ex);
+                    }
+                    finally
+                    {
+                        errorMask?.PopIndex();
+                    }
+                    break;
                 default:
                     break;
             }
@@ -1236,11 +1379,13 @@ namespace BethesdaGitSync.Internals
         public Settings_Mask(T initialValue)
         {
             this.Mappings = new MaskItem<T, IEnumerable<MaskItemIndexed<T, Mapping_Mask<T>>>>(initialValue, null);
+            this.LastReferencedDirectory = initialValue;
         }
         #endregion
 
         #region Members
         public MaskItem<T, IEnumerable<MaskItemIndexed<T, Mapping_Mask<T>>>> Mappings;
+        public T LastReferencedDirectory;
         #endregion
 
         #region Equals
@@ -1254,12 +1399,14 @@ namespace BethesdaGitSync.Internals
         {
             if (rhs == null) return false;
             if (!object.Equals(this.Mappings, rhs.Mappings)) return false;
+            if (!object.Equals(this.LastReferencedDirectory, rhs.LastReferencedDirectory)) return false;
             return true;
         }
         public override int GetHashCode()
         {
             int ret = 0;
             ret = ret.CombineHashCode(this.Mappings?.GetHashCode());
+            ret = ret.CombineHashCode(this.LastReferencedDirectory?.GetHashCode());
             return ret;
         }
 
@@ -1280,6 +1427,7 @@ namespace BethesdaGitSync.Internals
                     }
                 }
             }
+            if (!eval(this.LastReferencedDirectory)) return false;
             return true;
         }
         #endregion
@@ -1319,6 +1467,7 @@ namespace BethesdaGitSync.Internals
                     }
                 }
             }
+            obj.LastReferencedDirectory = eval(this.LastReferencedDirectory);
         }
         #endregion
 
@@ -1373,6 +1522,10 @@ namespace BethesdaGitSync.Internals
                     }
                     fg.AppendLine("]");
                 }
+                if (printMask?.LastReferencedDirectory ?? true)
+                {
+                    fg.AppendLine($"LastReferencedDirectory => {LastReferencedDirectory}");
+                }
             }
             fg.AppendLine("]");
         }
@@ -1397,6 +1550,7 @@ namespace BethesdaGitSync.Internals
             }
         }
         public MaskItem<Exception, IEnumerable<MaskItem<Exception, Mapping_ErrorMask>>> Mappings;
+        public Exception LastReferencedDirectory;
         #endregion
 
         #region IErrorMask
@@ -1407,6 +1561,8 @@ namespace BethesdaGitSync.Internals
             {
                 case Settings_FieldIndex.Mappings:
                     return Mappings;
+                case Settings_FieldIndex.LastReferencedDirectory:
+                    return LastReferencedDirectory;
                 default:
                     throw new ArgumentException($"Index is out of range: {index}");
             }
@@ -1419,6 +1575,9 @@ namespace BethesdaGitSync.Internals
             {
                 case Settings_FieldIndex.Mappings:
                     this.Mappings = new MaskItem<Exception, IEnumerable<MaskItem<Exception, Mapping_ErrorMask>>>(ex, null);
+                    break;
+                case Settings_FieldIndex.LastReferencedDirectory:
+                    this.LastReferencedDirectory = ex;
                     break;
                 default:
                     throw new ArgumentException($"Index is out of range: {index}");
@@ -1433,6 +1592,9 @@ namespace BethesdaGitSync.Internals
                 case Settings_FieldIndex.Mappings:
                     this.Mappings = (MaskItem<Exception, IEnumerable<MaskItem<Exception, Mapping_ErrorMask>>>)obj;
                     break;
+                case Settings_FieldIndex.LastReferencedDirectory:
+                    this.LastReferencedDirectory = (Exception)obj;
+                    break;
                 default:
                     throw new ArgumentException($"Index is out of range: {index}");
             }
@@ -1442,6 +1604,7 @@ namespace BethesdaGitSync.Internals
         {
             if (Overall != null) return true;
             if (Mappings != null) return true;
+            if (LastReferencedDirectory != null) return true;
             return false;
         }
         #endregion
@@ -1498,6 +1661,7 @@ namespace BethesdaGitSync.Internals
                 }
             }
             fg.AppendLine("]");
+            fg.AppendLine($"LastReferencedDirectory => {LastReferencedDirectory}");
         }
         #endregion
 
@@ -1506,6 +1670,7 @@ namespace BethesdaGitSync.Internals
         {
             var ret = new Settings_ErrorMask();
             ret.Mappings = new MaskItem<Exception, IEnumerable<MaskItem<Exception, Mapping_ErrorMask>>>(this.Mappings.Overall.Combine(rhs.Mappings.Overall), new List<MaskItem<Exception, Mapping_ErrorMask>>(this.Mappings.Specific.And(rhs.Mappings.Specific)));
+            ret.LastReferencedDirectory = this.LastReferencedDirectory.Combine(rhs.LastReferencedDirectory);
             return ret;
         }
         public static Settings_ErrorMask Combine(Settings_ErrorMask lhs, Settings_ErrorMask rhs)
@@ -1533,10 +1698,12 @@ namespace BethesdaGitSync.Internals
         public Settings_CopyMask(bool defaultOn, CopyOption deepCopyOption = CopyOption.Reference)
         {
             this.Mappings = new MaskItem<CopyOption, Mapping_CopyMask>(deepCopyOption, default);
+            this.LastReferencedDirectory = defaultOn;
         }
 
         #region Members
         public MaskItem<CopyOption, Mapping_CopyMask> Mappings;
+        public bool LastReferencedDirectory;
         #endregion
 
     }
@@ -1546,6 +1713,7 @@ namespace BethesdaGitSync.Internals
         #region Members
         private TranslationCrystal _crystal;
         public MaskItem<bool, Mapping_TranslationMask> Mappings;
+        public bool LastReferencedDirectory;
         #endregion
 
         #region Ctors
@@ -1556,6 +1724,7 @@ namespace BethesdaGitSync.Internals
         public Settings_TranslationMask(bool defaultOn)
         {
             this.Mappings = new MaskItem<bool, Mapping_TranslationMask>(defaultOn, null);
+            this.LastReferencedDirectory = defaultOn;
         }
 
         #endregion
@@ -1575,6 +1744,7 @@ namespace BethesdaGitSync.Internals
         protected void GetCrystal(List<(bool On, TranslationCrystal SubCrystal)> ret)
         {
             ret.Add((Mappings?.Overall ?? true, Mappings?.Specific?.GetCrystal()));
+            ret.Add((LastReferencedDirectory, null));
         }
     }
     #endregion

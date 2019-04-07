@@ -45,56 +45,28 @@ namespace BethesdaGitSync
         partial void CustomCtor();
         #endregion
 
-        #region BinaryPath
-        public bool BinaryPath_IsSet
+        #region Nickname
+        private String _Nickname;
+        public String Nickname
         {
-            get => _hasBeenSetTracker[(int)Mapping_FieldIndex.BinaryPath];
-            set => this.RaiseAndSetIfChanged(_hasBeenSetTracker, value, (int)Mapping_FieldIndex.BinaryPath, nameof(BinaryPath_IsSet));
+            get => this._Nickname;
+            set => this.RaiseAndSetIfChanged(ref this._Nickname, value, nameof(Nickname));
         }
-        bool IMappingGetter.BinaryPath_IsSet => BinaryPath_IsSet;
+        #endregion
+        #region BinaryPath
         private FilePath _BinaryPath;
-        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         public FilePath BinaryPath
         {
             get => this._BinaryPath;
-            set => BinaryPath_Set(value);
-        }
-        FilePath IMappingGetter.BinaryPath => this.BinaryPath;
-        public void BinaryPath_Set(
-            FilePath value,
-            bool markSet = true)
-        {
-            this.RaiseAndSetIfChanged(ref _BinaryPath, value, _hasBeenSetTracker, markSet, (int)Mapping_FieldIndex.BinaryPath, nameof(BinaryPath), nameof(BinaryPath_IsSet));
-        }
-        public void BinaryPath_Unset()
-        {
-            this.BinaryPath_Set(default(FilePath), false);
+            set => this.RaiseAndSetIfChanged(ref this._BinaryPath, value, nameof(BinaryPath));
         }
         #endregion
         #region FolderPath
-        public bool FolderPath_IsSet
-        {
-            get => _hasBeenSetTracker[(int)Mapping_FieldIndex.FolderPath];
-            set => this.RaiseAndSetIfChanged(_hasBeenSetTracker, value, (int)Mapping_FieldIndex.FolderPath, nameof(FolderPath_IsSet));
-        }
-        bool IMappingGetter.FolderPath_IsSet => FolderPath_IsSet;
         private DirectoryPath _FolderPath;
-        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         public DirectoryPath FolderPath
         {
             get => this._FolderPath;
-            set => FolderPath_Set(value);
-        }
-        DirectoryPath IMappingGetter.FolderPath => this.FolderPath;
-        public void FolderPath_Set(
-            DirectoryPath value,
-            bool markSet = true)
-        {
-            this.RaiseAndSetIfChanged(ref _FolderPath, value, _hasBeenSetTracker, markSet, (int)Mapping_FieldIndex.FolderPath, nameof(FolderPath), nameof(FolderPath_IsSet));
-        }
-        public void FolderPath_Unset()
-        {
-            this.FolderPath_Set(default(DirectoryPath), false);
+            set => this.RaiseAndSetIfChanged(ref this._FolderPath, value, nameof(FolderPath));
         }
         #endregion
 
@@ -123,11 +95,6 @@ namespace BethesdaGitSync
         IMask<bool> IEqualsMask<Mapping>.GetEqualsMask(Mapping rhs, EqualsMaskHelper.Include include) => MappingCommon.GetEqualsMask(this, rhs, include);
         IMask<bool> IEqualsMask<IMappingGetter>.GetEqualsMask(IMappingGetter rhs, EqualsMaskHelper.Include include) => MappingCommon.GetEqualsMask(this, rhs, include);
         #region To String
-        public override string ToString()
-        {
-            return MappingCommon.ToString(this, printMask: null);
-        }
-
         public string ToString(
             string name = null,
             Mapping_Mask<bool> printMask = null)
@@ -159,30 +126,18 @@ namespace BethesdaGitSync
         public bool Equals(Mapping rhs)
         {
             if (rhs == null) return false;
-            if (BinaryPath_IsSet != rhs.BinaryPath_IsSet) return false;
-            if (BinaryPath_IsSet)
-            {
-                if (!object.Equals(this.BinaryPath, rhs.BinaryPath)) return false;
-            }
-            if (FolderPath_IsSet != rhs.FolderPath_IsSet) return false;
-            if (FolderPath_IsSet)
-            {
-                if (!object.Equals(this.FolderPath, rhs.FolderPath)) return false;
-            }
+            if (!object.Equals(this.Nickname, rhs.Nickname)) return false;
+            if (!object.Equals(this.BinaryPath, rhs.BinaryPath)) return false;
+            if (!object.Equals(this.FolderPath, rhs.FolderPath)) return false;
             return true;
         }
 
         public override int GetHashCode()
         {
             int ret = 0;
-            if (BinaryPath_IsSet)
-            {
-                ret = HashHelper.GetHashCode(BinaryPath).CombineHashCode(ret);
-            }
-            if (FolderPath_IsSet)
-            {
-                ret = HashHelper.GetHashCode(FolderPath).CombineHashCode(ret);
-            }
+            ret = HashHelper.GetHashCode(Nickname).CombineHashCode(ret);
+            ret = HashHelper.GetHashCode(BinaryPath).CombineHashCode(ret);
+            ret = HashHelper.GetHashCode(FolderPath).CombineHashCode(ret);
             return ret;
         }
 
@@ -194,9 +149,11 @@ namespace BethesdaGitSync
         [DebuggerStepThrough]
         public static Mapping Create_Xml(
             XElement node,
+            MissingCreate missing = MissingCreate.New,
             Mapping_TranslationMask translationMask = null)
         {
             return Create_Xml(
+                missing: missing,
                 node: node,
                 errorMask: null,
                 translationMask: translationMask?.GetCrystal());
@@ -207,10 +164,12 @@ namespace BethesdaGitSync
             XElement node,
             out Mapping_ErrorMask errorMask,
             bool doMasks = true,
-            Mapping_TranslationMask translationMask = null)
+            Mapping_TranslationMask translationMask = null,
+            MissingCreate missing = MissingCreate.New)
         {
             ErrorMaskBuilder errorMaskBuilder = doMasks ? new ErrorMaskBuilder() : null;
             var ret = Create_Xml(
+                missing: missing,
                 node: node,
                 errorMask: errorMaskBuilder,
                 translationMask: translationMask.GetCrystal());
@@ -221,8 +180,18 @@ namespace BethesdaGitSync
         public static Mapping Create_Xml(
             XElement node,
             ErrorMaskBuilder errorMask,
-            TranslationCrystal translationMask)
+            TranslationCrystal translationMask,
+            MissingCreate missing = MissingCreate.New)
         {
+            switch (missing)
+            {
+                case MissingCreate.New:
+                case MissingCreate.Null:
+                    if (node == null) return missing == MissingCreate.New ? new Mapping() : null;
+                    break;
+                default:
+                    break;
+            }
             var ret = new Mapping();
             try
             {
@@ -246,10 +215,12 @@ namespace BethesdaGitSync
 
         public static Mapping Create_Xml(
             string path,
+            MissingCreate missing = MissingCreate.New,
             Mapping_TranslationMask translationMask = null)
         {
-            var node = XDocument.Load(path).Root;
+            var node = System.IO.File.Exists(path) ? XDocument.Load(path).Root : null;
             return Create_Xml(
+                missing: missing,
                 node: node,
                 translationMask: translationMask);
         }
@@ -257,10 +228,12 @@ namespace BethesdaGitSync
         public static Mapping Create_Xml(
             string path,
             out Mapping_ErrorMask errorMask,
-            Mapping_TranslationMask translationMask = null)
+            Mapping_TranslationMask translationMask = null,
+            MissingCreate missing = MissingCreate.New)
         {
-            var node = XDocument.Load(path).Root;
+            var node = System.IO.File.Exists(path) ? XDocument.Load(path).Root : null;
             return Create_Xml(
+                missing: missing,
                 node: node,
                 errorMask: out errorMask,
                 translationMask: translationMask);
@@ -269,10 +242,12 @@ namespace BethesdaGitSync
         public static Mapping Create_Xml(
             string path,
             ErrorMaskBuilder errorMask,
-            Mapping_TranslationMask translationMask = null)
+            Mapping_TranslationMask translationMask = null,
+            MissingCreate missing = MissingCreate.New)
         {
-            var node = XDocument.Load(path).Root;
+            var node = System.IO.File.Exists(path) ? XDocument.Load(path).Root : null;
             return Create_Xml(
+                missing: missing,
                 node: node,
                 errorMask: errorMask,
                 translationMask: translationMask?.GetCrystal());
@@ -280,10 +255,12 @@ namespace BethesdaGitSync
 
         public static Mapping Create_Xml(
             Stream stream,
+            MissingCreate missing = MissingCreate.New,
             Mapping_TranslationMask translationMask = null)
         {
             var node = XDocument.Load(stream).Root;
             return Create_Xml(
+                missing: missing,
                 node: node,
                 translationMask: translationMask);
         }
@@ -291,10 +268,12 @@ namespace BethesdaGitSync
         public static Mapping Create_Xml(
             Stream stream,
             out Mapping_ErrorMask errorMask,
-            Mapping_TranslationMask translationMask = null)
+            Mapping_TranslationMask translationMask = null,
+            MissingCreate missing = MissingCreate.New)
         {
             var node = XDocument.Load(stream).Root;
             return Create_Xml(
+                missing: missing,
                 node: node,
                 errorMask: out errorMask,
                 translationMask: translationMask);
@@ -303,10 +282,12 @@ namespace BethesdaGitSync
         public static Mapping Create_Xml(
             Stream stream,
             ErrorMaskBuilder errorMask,
-            Mapping_TranslationMask translationMask = null)
+            Mapping_TranslationMask translationMask = null,
+            MissingCreate missing = MissingCreate.New)
         {
             var node = XDocument.Load(stream).Root;
             return Create_Xml(
+                missing: missing,
                 node: node,
                 errorMask: errorMask,
                 translationMask: translationMask?.GetCrystal());
@@ -317,9 +298,11 @@ namespace BethesdaGitSync
         #region Xml Copy In
         public void CopyIn_Xml(
             XElement node,
+            MissingCreate missing = MissingCreate.New,
             NotifyingFireParameters cmds = null)
         {
             CopyIn_Xml_Internal(
+                missing: missing,
                 node: node,
                 errorMask: null,
                 translationMask: null,
@@ -330,11 +313,13 @@ namespace BethesdaGitSync
             XElement node,
             out Mapping_ErrorMask errorMask,
             Mapping_TranslationMask translationMask = null,
+            MissingCreate missing = MissingCreate.New,
             bool doMasks = true,
             NotifyingFireParameters cmds = null)
         {
             ErrorMaskBuilder errorMaskBuilder = doMasks ? new ErrorMaskBuilder() : null;
             CopyIn_Xml_Internal(
+                missing: missing,
                 node: node,
                 errorMask: errorMaskBuilder,
                 translationMask: translationMask?.GetCrystal(),
@@ -346,9 +331,11 @@ namespace BethesdaGitSync
             XElement node,
             ErrorMaskBuilder errorMask,
             TranslationCrystal translationMask,
+            MissingCreate missing = MissingCreate.New,
             NotifyingFireParameters cmds = null)
         {
             LoquiXmlTranslation<Mapping>.Instance.CopyIn(
+                missing: missing,
                 node: node,
                 item: this,
                 skipProtected: true,
@@ -359,10 +346,12 @@ namespace BethesdaGitSync
 
         public void CopyIn_Xml(
             string path,
+            MissingCreate missing = MissingCreate.New,
             NotifyingFireParameters cmds = null)
         {
-            var node = XDocument.Load(path).Root;
+            var node = System.IO.File.Exists(path) ? XDocument.Load(path).Root : null;
             this.CopyIn_Xml(
+                missing: missing,
                 node: node,
                 cmds: cmds);
         }
@@ -371,11 +360,13 @@ namespace BethesdaGitSync
             string path,
             out Mapping_ErrorMask errorMask,
             Mapping_TranslationMask translationMask,
+            MissingCreate missing = MissingCreate.New,
             NotifyingFireParameters cmds = null,
             bool doMasks = true)
         {
-            var node = XDocument.Load(path).Root;
+            var node = System.IO.File.Exists(path) ? XDocument.Load(path).Root : null;
             this.CopyIn_Xml(
+                missing: missing,
                 node: node,
                 errorMask: out errorMask,
                 translationMask: translationMask,
@@ -385,10 +376,12 @@ namespace BethesdaGitSync
 
         public void CopyIn_Xml(
             Stream stream,
+            MissingCreate missing = MissingCreate.New,
             NotifyingFireParameters cmds = null)
         {
             var node = XDocument.Load(stream).Root;
             this.CopyIn_Xml(
+                missing: missing,
                 node: node,
                 cmds: cmds);
         }
@@ -397,11 +390,13 @@ namespace BethesdaGitSync
             Stream stream,
             out Mapping_ErrorMask errorMask,
             Mapping_TranslationMask translationMask,
+            MissingCreate missing = MissingCreate.New,
             NotifyingFireParameters cmds = null,
             bool doMasks = true)
         {
             var node = XDocument.Load(stream).Root;
             this.CopyIn_Xml(
+                missing: missing,
                 node: node,
                 errorMask: out errorMask,
                 translationMask: translationMask,
@@ -550,9 +545,10 @@ namespace BethesdaGitSync
         {
             switch ((Mapping_FieldIndex)index)
             {
+                case Mapping_FieldIndex.Nickname:
                 case Mapping_FieldIndex.BinaryPath:
                 case Mapping_FieldIndex.FolderPath:
-                    return _hasBeenSetTracker[index];
+                    return true;
                 default:
                     throw new ArgumentException($"Unknown field index: {index}");
             }
@@ -680,6 +676,9 @@ namespace BethesdaGitSync
             Mapping_FieldIndex enu = (Mapping_FieldIndex)index;
             switch (enu)
             {
+                case Mapping_FieldIndex.Nickname:
+                    this.Nickname = (String)obj;
+                    break;
                 case Mapping_FieldIndex.BinaryPath:
                     this.BinaryPath = (FilePath)obj;
                     break;
@@ -723,6 +722,9 @@ namespace BethesdaGitSync
             }
             switch (enu)
             {
+                case Mapping_FieldIndex.Nickname:
+                    obj.Nickname = (String)pair.Value;
+                    break;
                 case Mapping_FieldIndex.BinaryPath:
                     obj.BinaryPath = (FilePath)pair.Value;
                     break;
@@ -744,28 +746,26 @@ namespace BethesdaGitSync
     #region Interface
     public partial interface IMapping : IMappingGetter, ILoquiClass<IMapping, IMappingGetter>, ILoquiClass<Mapping, IMappingGetter>
     {
+        new String Nickname { get; set; }
+
         new FilePath BinaryPath { get; set; }
-        new bool BinaryPath_IsSet { get; set; }
-        void BinaryPath_Set(FilePath item, bool hasBeenSet = true);
-        void BinaryPath_Unset();
 
         new DirectoryPath FolderPath { get; set; }
-        new bool FolderPath_IsSet { get; set; }
-        void FolderPath_Set(DirectoryPath item, bool hasBeenSet = true);
-        void FolderPath_Unset();
 
     }
 
     public partial interface IMappingGetter : ILoquiObject
     {
+        #region Nickname
+        String Nickname { get; }
+
+        #endregion
         #region BinaryPath
         FilePath BinaryPath { get; }
-        bool BinaryPath_IsSet { get; }
 
         #endregion
         #region FolderPath
         DirectoryPath FolderPath { get; }
-        bool FolderPath_IsSet { get; }
 
         #endregion
 
@@ -780,8 +780,9 @@ namespace BethesdaGitSync.Internals
     #region Field Index
     public enum Mapping_FieldIndex
     {
-        BinaryPath = 0,
-        FolderPath = 1,
+        Nickname = 0,
+        BinaryPath = 1,
+        FolderPath = 2,
     }
     #endregion
 
@@ -790,18 +791,18 @@ namespace BethesdaGitSync.Internals
     {
         public static readonly Mapping_Registration Instance = new Mapping_Registration();
 
-        public static ProtocolKey ProtocolKey => ProtocolDefinition_GitConverter.ProtocolKey;
+        public static ProtocolKey ProtocolKey => ProtocolDefinition_BethesdaGitSync.ProtocolKey;
 
         public static readonly ObjectKey ObjectKey = new ObjectKey(
-            protocolKey: ProtocolDefinition_GitConverter.ProtocolKey,
+            protocolKey: ProtocolDefinition_BethesdaGitSync.ProtocolKey,
             msgID: 2,
             version: 0);
 
         public const string GUID = "15afffaa-eeaa-40c5-b515-ca20a34e4b76";
 
-        public const ushort AdditionalFieldCount = 2;
+        public const ushort AdditionalFieldCount = 3;
 
-        public const ushort FieldCount = 2;
+        public const ushort FieldCount = 3;
 
         public static readonly Type MaskType = typeof(Mapping_Mask<>);
 
@@ -829,6 +830,8 @@ namespace BethesdaGitSync.Internals
         {
             switch (str.Upper)
             {
+                case "NICKNAME":
+                    return (ushort)Mapping_FieldIndex.Nickname;
                 case "BINARYPATH":
                     return (ushort)Mapping_FieldIndex.BinaryPath;
                 case "FOLDERPATH":
@@ -843,6 +846,7 @@ namespace BethesdaGitSync.Internals
             Mapping_FieldIndex enu = (Mapping_FieldIndex)index;
             switch (enu)
             {
+                case Mapping_FieldIndex.Nickname:
                 case Mapping_FieldIndex.BinaryPath:
                 case Mapping_FieldIndex.FolderPath:
                     return false;
@@ -856,6 +860,7 @@ namespace BethesdaGitSync.Internals
             Mapping_FieldIndex enu = (Mapping_FieldIndex)index;
             switch (enu)
             {
+                case Mapping_FieldIndex.Nickname:
                 case Mapping_FieldIndex.BinaryPath:
                 case Mapping_FieldIndex.FolderPath:
                     return false;
@@ -869,6 +874,7 @@ namespace BethesdaGitSync.Internals
             Mapping_FieldIndex enu = (Mapping_FieldIndex)index;
             switch (enu)
             {
+                case Mapping_FieldIndex.Nickname:
                 case Mapping_FieldIndex.BinaryPath:
                 case Mapping_FieldIndex.FolderPath:
                     return false;
@@ -882,6 +888,8 @@ namespace BethesdaGitSync.Internals
             Mapping_FieldIndex enu = (Mapping_FieldIndex)index;
             switch (enu)
             {
+                case Mapping_FieldIndex.Nickname:
+                    return "Nickname";
                 case Mapping_FieldIndex.BinaryPath:
                     return "BinaryPath";
                 case Mapping_FieldIndex.FolderPath:
@@ -896,6 +904,7 @@ namespace BethesdaGitSync.Internals
             Mapping_FieldIndex enu = (Mapping_FieldIndex)index;
             switch (enu)
             {
+                case Mapping_FieldIndex.Nickname:
                 case Mapping_FieldIndex.BinaryPath:
                 case Mapping_FieldIndex.FolderPath:
                     return false;
@@ -909,6 +918,7 @@ namespace BethesdaGitSync.Internals
             Mapping_FieldIndex enu = (Mapping_FieldIndex)index;
             switch (enu)
             {
+                case Mapping_FieldIndex.Nickname:
                 case Mapping_FieldIndex.BinaryPath:
                 case Mapping_FieldIndex.FolderPath:
                     return false;
@@ -922,6 +932,8 @@ namespace BethesdaGitSync.Internals
             Mapping_FieldIndex enu = (Mapping_FieldIndex)index;
             switch (enu)
             {
+                case Mapping_FieldIndex.Nickname:
+                    return typeof(String);
                 case Mapping_FieldIndex.BinaryPath:
                     return typeof(FilePath);
                 case Mapping_FieldIndex.FolderPath:
@@ -973,25 +985,29 @@ namespace BethesdaGitSync.Internals
             Mapping_CopyMask copyMask,
             NotifyingFireParameters cmds = null)
         {
+            if (copyMask?.Nickname ?? true)
+            {
+                errorMask?.PushIndex((int)Mapping_FieldIndex.Nickname);
+                try
+                {
+                    item.Nickname = rhs.Nickname;
+                }
+                catch (Exception ex)
+                when (errorMask != null)
+                {
+                    errorMask.ReportException(ex);
+                }
+                finally
+                {
+                    errorMask?.PopIndex();
+                }
+            }
             if (copyMask?.BinaryPath ?? true)
             {
                 errorMask?.PushIndex((int)Mapping_FieldIndex.BinaryPath);
                 try
                 {
-                    if (LoquiHelper.DefaultSwitch(
-                        rhsItem: rhs.BinaryPath,
-                        rhsHasBeenSet: rhs.BinaryPath_IsSet,
-                        defItem: def?.BinaryPath ?? default(FilePath),
-                        defHasBeenSet: def?.BinaryPath_IsSet ?? false,
-                        outRhsItem: out var rhsBinaryPathItem,
-                        outDefItem: out var defBinaryPathItem))
-                    {
-                        item.BinaryPath = rhsBinaryPathItem;
-                    }
-                    else
-                    {
-                        item.BinaryPath_Unset();
-                    }
+                    item.BinaryPath = rhs.BinaryPath;
                 }
                 catch (Exception ex)
                 when (errorMask != null)
@@ -1008,20 +1024,7 @@ namespace BethesdaGitSync.Internals
                 errorMask?.PushIndex((int)Mapping_FieldIndex.FolderPath);
                 try
                 {
-                    if (LoquiHelper.DefaultSwitch(
-                        rhsItem: rhs.FolderPath,
-                        rhsHasBeenSet: rhs.FolderPath_IsSet,
-                        defItem: def?.FolderPath ?? default(DirectoryPath),
-                        defHasBeenSet: def?.FolderPath_IsSet ?? false,
-                        outRhsItem: out var rhsFolderPathItem,
-                        outDefItem: out var defFolderPathItem))
-                    {
-                        item.FolderPath = rhsFolderPathItem;
-                    }
-                    else
-                    {
-                        item.FolderPath_Unset();
-                    }
+                    item.FolderPath = rhs.FolderPath;
                 }
                 catch (Exception ex)
                 when (errorMask != null)
@@ -1046,12 +1049,11 @@ namespace BethesdaGitSync.Internals
             Mapping_FieldIndex enu = (Mapping_FieldIndex)index;
             switch (enu)
             {
+                case Mapping_FieldIndex.Nickname:
                 case Mapping_FieldIndex.BinaryPath:
-                    obj.BinaryPath_IsSet = on;
-                    break;
                 case Mapping_FieldIndex.FolderPath:
-                    obj.FolderPath_IsSet = on;
-                    break;
+                    if (on) break;
+                    throw new ArgumentException("Tried to unset a field which does not have this functionality." + index);
                 default:
                     throw new ArgumentException($"Index is out of range: {index}");
             }
@@ -1065,11 +1067,14 @@ namespace BethesdaGitSync.Internals
             Mapping_FieldIndex enu = (Mapping_FieldIndex)index;
             switch (enu)
             {
+                case Mapping_FieldIndex.Nickname:
+                    obj.Nickname = default(String);
+                    break;
                 case Mapping_FieldIndex.BinaryPath:
-                    obj.BinaryPath_Unset();
+                    obj.BinaryPath = default(FilePath);
                     break;
                 case Mapping_FieldIndex.FolderPath:
-                    obj.FolderPath_Unset();
+                    obj.FolderPath = default(DirectoryPath);
                     break;
                 default:
                     throw new ArgumentException($"Index is out of range: {index}");
@@ -1083,10 +1088,10 @@ namespace BethesdaGitSync.Internals
             Mapping_FieldIndex enu = (Mapping_FieldIndex)index;
             switch (enu)
             {
+                case Mapping_FieldIndex.Nickname:
                 case Mapping_FieldIndex.BinaryPath:
-                    return obj.BinaryPath_IsSet;
                 case Mapping_FieldIndex.FolderPath:
-                    return obj.FolderPath_IsSet;
+                    return true;
                 default:
                     throw new ArgumentException($"Index is out of range: {index}");
             }
@@ -1099,6 +1104,8 @@ namespace BethesdaGitSync.Internals
             Mapping_FieldIndex enu = (Mapping_FieldIndex)index;
             switch (enu)
             {
+                case Mapping_FieldIndex.Nickname:
+                    return obj.Nickname;
                 case Mapping_FieldIndex.BinaryPath:
                     return obj.BinaryPath;
                 case Mapping_FieldIndex.FolderPath:
@@ -1112,8 +1119,9 @@ namespace BethesdaGitSync.Internals
             IMapping item,
             NotifyingUnsetParameters cmds = null)
         {
-            item.BinaryPath_Unset();
-            item.FolderPath_Unset();
+            item.Nickname = default(String);
+            item.BinaryPath = default(FilePath);
+            item.FolderPath = default(DirectoryPath);
         }
 
         public static Mapping_Mask<bool> GetEqualsMask(
@@ -1137,8 +1145,9 @@ namespace BethesdaGitSync.Internals
             EqualsMaskHelper.Include include = EqualsMaskHelper.Include.All)
         {
             if (rhs == null) return;
-            ret.BinaryPath = item.BinaryPath_IsSet == rhs.BinaryPath_IsSet && object.Equals(item.BinaryPath, rhs.BinaryPath);
-            ret.FolderPath = item.FolderPath_IsSet == rhs.FolderPath_IsSet && object.Equals(item.FolderPath, rhs.FolderPath);
+            ret.Nickname = object.Equals(item.Nickname, rhs.Nickname);
+            ret.BinaryPath = object.Equals(item.BinaryPath, rhs.BinaryPath);
+            ret.FolderPath = object.Equals(item.FolderPath, rhs.FolderPath);
         }
 
         public static string ToString(
@@ -1168,6 +1177,10 @@ namespace BethesdaGitSync.Internals
             fg.AppendLine("[");
             using (new DepthWrapper(fg))
             {
+                if (printMask?.Nickname ?? true)
+                {
+                    fg.AppendLine($"Nickname => {item.Nickname}");
+                }
                 if (printMask?.BinaryPath ?? true)
                 {
                     fg.AppendLine($"BinaryPath => {item.BinaryPath}");
@@ -1184,16 +1197,15 @@ namespace BethesdaGitSync.Internals
             this IMappingGetter item,
             Mapping_Mask<bool?> checkMask)
         {
-            if (checkMask.BinaryPath.HasValue && checkMask.BinaryPath.Value != item.BinaryPath_IsSet) return false;
-            if (checkMask.FolderPath.HasValue && checkMask.FolderPath.Value != item.FolderPath_IsSet) return false;
             return true;
         }
 
         public static Mapping_Mask<bool> GetHasBeenSetMask(IMappingGetter item)
         {
             var ret = new Mapping_Mask<bool>();
-            ret.BinaryPath = item.BinaryPath_IsSet;
-            ret.FolderPath = item.FolderPath_IsSet;
+            ret.Nickname = true;
+            ret.BinaryPath = true;
+            ret.FolderPath = true;
             return ret;
         }
 
@@ -1244,8 +1256,16 @@ namespace BethesdaGitSync.Internals
             ErrorMaskBuilder errorMask,
             TranslationCrystal translationMask)
         {
-            if (item.BinaryPath_IsSet
-                && (translationMask?.GetShouldTranslate((int)Mapping_FieldIndex.BinaryPath) ?? true))
+            if ((translationMask?.GetShouldTranslate((int)Mapping_FieldIndex.Nickname) ?? true))
+            {
+                StringXmlTranslation.Instance.Write(
+                    node: node,
+                    name: nameof(item.Nickname),
+                    item: item.Nickname,
+                    fieldIndex: (int)Mapping_FieldIndex.Nickname,
+                    errorMask: errorMask);
+            }
+            if ((translationMask?.GetShouldTranslate((int)Mapping_FieldIndex.BinaryPath) ?? true))
             {
                 FilePathXmlTranslation.Instance.Write(
                     node: node,
@@ -1254,8 +1274,7 @@ namespace BethesdaGitSync.Internals
                     fieldIndex: (int)Mapping_FieldIndex.BinaryPath,
                     errorMask: errorMask);
             }
-            if (item.FolderPath_IsSet
-                && (translationMask?.GetShouldTranslate((int)Mapping_FieldIndex.FolderPath) ?? true))
+            if ((translationMask?.GetShouldTranslate((int)Mapping_FieldIndex.FolderPath) ?? true))
             {
                 DirectoryPathXmlTranslation.Instance.Write(
                     node: node,
@@ -1300,6 +1319,32 @@ namespace BethesdaGitSync.Internals
         {
             switch (name)
             {
+                case "Nickname":
+                    try
+                    {
+                        errorMask?.PushIndex((int)Mapping_FieldIndex.Nickname);
+                        if (StringXmlTranslation.Instance.Parse(
+                            node: node,
+                            item: out String NicknameParse,
+                            errorMask: errorMask))
+                        {
+                            item.Nickname = NicknameParse;
+                        }
+                        else
+                        {
+                            item.Nickname = default(String);
+                        }
+                    }
+                    catch (Exception ex)
+                    when (errorMask != null)
+                    {
+                        errorMask.ReportException(ex);
+                    }
+                    finally
+                    {
+                        errorMask?.PopIndex();
+                    }
+                    break;
                 case "BinaryPath":
                     try
                     {
@@ -1373,12 +1418,14 @@ namespace BethesdaGitSync.Internals
 
         public Mapping_Mask(T initialValue)
         {
+            this.Nickname = initialValue;
             this.BinaryPath = initialValue;
             this.FolderPath = initialValue;
         }
         #endregion
 
         #region Members
+        public T Nickname;
         public T BinaryPath;
         public T FolderPath;
         #endregion
@@ -1393,6 +1440,7 @@ namespace BethesdaGitSync.Internals
         public bool Equals(Mapping_Mask<T> rhs)
         {
             if (rhs == null) return false;
+            if (!object.Equals(this.Nickname, rhs.Nickname)) return false;
             if (!object.Equals(this.BinaryPath, rhs.BinaryPath)) return false;
             if (!object.Equals(this.FolderPath, rhs.FolderPath)) return false;
             return true;
@@ -1400,6 +1448,7 @@ namespace BethesdaGitSync.Internals
         public override int GetHashCode()
         {
             int ret = 0;
+            ret = ret.CombineHashCode(this.Nickname?.GetHashCode());
             ret = ret.CombineHashCode(this.BinaryPath?.GetHashCode());
             ret = ret.CombineHashCode(this.FolderPath?.GetHashCode());
             return ret;
@@ -1410,6 +1459,7 @@ namespace BethesdaGitSync.Internals
         #region All Equal
         public bool AllEqual(Func<T, bool> eval)
         {
+            if (!eval(this.Nickname)) return false;
             if (!eval(this.BinaryPath)) return false;
             if (!eval(this.FolderPath)) return false;
             return true;
@@ -1426,6 +1476,7 @@ namespace BethesdaGitSync.Internals
 
         protected void Translate_InternalFill<R>(Mapping_Mask<R> obj, Func<T, R> eval)
         {
+            obj.Nickname = eval(this.Nickname);
             obj.BinaryPath = eval(this.BinaryPath);
             obj.FolderPath = eval(this.FolderPath);
         }
@@ -1456,6 +1507,10 @@ namespace BethesdaGitSync.Internals
             fg.AppendLine("[");
             using (new DepthWrapper(fg))
             {
+                if (printMask?.Nickname ?? true)
+                {
+                    fg.AppendLine($"Nickname => {Nickname}");
+                }
                 if (printMask?.BinaryPath ?? true)
                 {
                     fg.AppendLine($"BinaryPath => {BinaryPath}");
@@ -1487,6 +1542,7 @@ namespace BethesdaGitSync.Internals
                 return _warnings;
             }
         }
+        public Exception Nickname;
         public Exception BinaryPath;
         public Exception FolderPath;
         #endregion
@@ -1497,6 +1553,8 @@ namespace BethesdaGitSync.Internals
             Mapping_FieldIndex enu = (Mapping_FieldIndex)index;
             switch (enu)
             {
+                case Mapping_FieldIndex.Nickname:
+                    return Nickname;
                 case Mapping_FieldIndex.BinaryPath:
                     return BinaryPath;
                 case Mapping_FieldIndex.FolderPath:
@@ -1511,6 +1569,9 @@ namespace BethesdaGitSync.Internals
             Mapping_FieldIndex enu = (Mapping_FieldIndex)index;
             switch (enu)
             {
+                case Mapping_FieldIndex.Nickname:
+                    this.Nickname = ex;
+                    break;
                 case Mapping_FieldIndex.BinaryPath:
                     this.BinaryPath = ex;
                     break;
@@ -1527,6 +1588,9 @@ namespace BethesdaGitSync.Internals
             Mapping_FieldIndex enu = (Mapping_FieldIndex)index;
             switch (enu)
             {
+                case Mapping_FieldIndex.Nickname:
+                    this.Nickname = (Exception)obj;
+                    break;
                 case Mapping_FieldIndex.BinaryPath:
                     this.BinaryPath = (Exception)obj;
                     break;
@@ -1541,6 +1605,7 @@ namespace BethesdaGitSync.Internals
         public bool IsInError()
         {
             if (Overall != null) return true;
+            if (Nickname != null) return true;
             if (BinaryPath != null) return true;
             if (FolderPath != null) return true;
             return false;
@@ -1577,6 +1642,7 @@ namespace BethesdaGitSync.Internals
         }
         protected void ToString_FillInternal(FileGeneration fg)
         {
+            fg.AppendLine($"Nickname => {Nickname}");
             fg.AppendLine($"BinaryPath => {BinaryPath}");
             fg.AppendLine($"FolderPath => {FolderPath}");
         }
@@ -1586,6 +1652,7 @@ namespace BethesdaGitSync.Internals
         public Mapping_ErrorMask Combine(Mapping_ErrorMask rhs)
         {
             var ret = new Mapping_ErrorMask();
+            ret.Nickname = this.Nickname.Combine(rhs.Nickname);
             ret.BinaryPath = this.BinaryPath.Combine(rhs.BinaryPath);
             ret.FolderPath = this.FolderPath.Combine(rhs.FolderPath);
             return ret;
@@ -1614,11 +1681,13 @@ namespace BethesdaGitSync.Internals
 
         public Mapping_CopyMask(bool defaultOn, CopyOption deepCopyOption = CopyOption.Reference)
         {
+            this.Nickname = defaultOn;
             this.BinaryPath = defaultOn;
             this.FolderPath = defaultOn;
         }
 
         #region Members
+        public bool Nickname;
         public bool BinaryPath;
         public bool FolderPath;
         #endregion
@@ -1629,6 +1698,7 @@ namespace BethesdaGitSync.Internals
     {
         #region Members
         private TranslationCrystal _crystal;
+        public bool Nickname;
         public bool BinaryPath;
         public bool FolderPath;
         #endregion
@@ -1640,6 +1710,7 @@ namespace BethesdaGitSync.Internals
 
         public Mapping_TranslationMask(bool defaultOn)
         {
+            this.Nickname = defaultOn;
             this.BinaryPath = defaultOn;
             this.FolderPath = defaultOn;
         }
@@ -1660,6 +1731,7 @@ namespace BethesdaGitSync.Internals
 
         protected void GetCrystal(List<(bool On, TranslationCrystal SubCrystal)> ret)
         {
+            ret.Add((Nickname, null));
             ret.Add((BinaryPath, null));
             ret.Add((FolderPath, null));
         }

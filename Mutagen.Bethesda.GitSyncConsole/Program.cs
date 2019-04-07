@@ -13,7 +13,7 @@ namespace Mutagen.Bethesda.GitSyncConsole
     {
         enum Type { ToBinary, ToXML }
 
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
             if (args.Length < 3
                 || !Enum.TryParse<Type>(args[0], out var type))
@@ -37,24 +37,24 @@ namespace Mutagen.Bethesda.GitSyncConsole
 
             var instr = new GitConversionInstructions<OblivionMod>()
             {
-                CreateBinary = (f) => OblivionMod.Create_Binary(f.Path, modKey),
-                CreateXmlFolder = (f) => OblivionMod.Create_Xml_Folder(f.Path, modKey),
-                WriteBinary = (m, f) => m.Write_Binary(f.Path, modKey),
-                WriteXmlFolder = (m, f) => m.Write_XmlFolder(f.Path)
+                CreateBinary = async (f) => OblivionMod.Create_Binary(f.Path, modKey),
+                CreateXmlFolder = async (f) => await OblivionMod.Create_Xml_Folder(f.Path, modKey),
+                WriteBinary = async (m, f) => m.Write_Binary(f.Path, modKey),
+                WriteXmlFolder = async (m, f) => await m.Write_XmlFolder(f.Path)
             };
 
             GitConversionUtility.Error error;
             switch (type)
             {
                 case Type.ToBinary:
-                    error = GitConversionUtility.ConvertToBinary(
+                    error = await GitConversionUtility.ConvertToBinary(
                         folder,
                         binaryPath,
                         instr,
                         backupFolder: backupPath);
                     break;
                 case Type.ToXML:
-                    error = GitConversionUtility.ConvertToFolder(
+                    error = await GitConversionUtility.ConvertToFolder(
                         binaryPath,
                         folder,
                         instr,
@@ -89,7 +89,7 @@ namespace Mutagen.Bethesda.GitSyncConsole
             switch (type)
             {
                 case Type.ToBinary:
-                    error = GitConversionUtility.ConvertToBinary(
+                    error = await GitConversionUtility.ConvertToBinary(
                         folder,
                         binaryPath,
                         instr,
@@ -97,7 +97,7 @@ namespace Mutagen.Bethesda.GitSyncConsole
                         backupFolder: backupPath);
                     break;
                 case Type.ToXML:
-                    error = GitConversionUtility.ConvertToFolder(
+                    error = await GitConversionUtility.ConvertToFolder(
                         binaryPath,
                         folder,
                         instr,

@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="us-ascii"?>
-<xs:schema id="Mapping" targetNamespace="GitConverter" elementFormDefault="qualified" xmlns="GitConverter" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+<xs:schema id="Mapping" targetNamespace="BethesdaGitSync" elementFormDefault="qualified" xmlns="BethesdaGitSync" xmlns:xs="http://www.w3.org/2001/XMLSchema">
    <xs:include schemaLocation="..\Common.xsd" />
    <xs:element name="Mapping" type="MappingType" />
    <xs:complexType name="MappingType">
       <xs:choice minOccurs="0" maxOccurs="unbounded">
+         <xs:element name="Nickname" type="NullableValueType" minOccurs="0" maxOccurs="1" />
          <xs:element name="BinaryPath" type="ValueType" minOccurs="0" maxOccurs="1" />
          <xs:element name="FolderPath" type="ValueType" minOccurs="0" maxOccurs="1" />
       </xs:choice>

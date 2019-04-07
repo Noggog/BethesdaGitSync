@@ -11,8 +11,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSharpExt", "..\CSharpExt\C
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Loqui", "..\Loqui\Loqui\Loqui.csproj", "{6AE0A041-3A4F-4DFA-A261-F1B729C2E8F8}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Loqui.Presentation", "..\Loqui\Loqui.Presentation\Loqui.Presentation.csproj", "{ED277F36-A22E-43A0-839D-B175760B206B}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mutagen.Bethesda", "..\Mutagen\Mutagen.Bethesda\Mutagen.Bethesda.csproj", "{75BF59D8-CECA-4E90-912A-BDFC4889E755}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mutagen.Bethesda.Oblivion", "..\Mutagen\Mutagen.Bethesda.Oblivion\Mutagen.Bethesda.Oblivion.csproj", "{593DFA39-7514-40DA-9B85-4F8FB3C544A5}"
@@ -21,7 +19,15 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BethesdaGitSync", "Bethesda
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mutagen.Bethesda.GitSync", "Mutagen.Bethesda.GitSync\Mutagen.Bethesda.GitSync.csproj", "{0C3C2327-4B0B-4672-B582-8B5056302BDD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mutagen.Bethesda.GitSyncConsole", "Mutagen.Bethesda.GitSyncConsole\Mutagen.Bethesda.GitSyncConsole.csproj", "{92FED143-343E-4A3B-9818-18F81B87EE71}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mutagen.Bethesda.GitSyncConsole", "Mutagen.Bethesda.GitSyncConsole\Mutagen.Bethesda.GitSyncConsole.csproj", "{92FED143-343E-4A3B-9818-18F81B87EE71}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mutagen.Bethesda.GitSync.Generator", "Mutagen.Bethesda.GitSync.Generator\Mutagen.Bethesda.GitSync.Generator.csproj", "{200FCAE7-B82C-469C-BA3A-BCBF4D32DC46}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Loqui.Generation", "..\Loqui\Loqui.Generation\Loqui.Generation.csproj", "{E869BDD1-88AE-4FDD-97ED-D062ABB7A391}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Loqui.Presentation", "..\Loqui\Loqui.Presentation\Loqui.Presentation.csproj", "{6C358D5D-1D14-4EE7-B9DE-474F1A263B7A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Noggog.WPF", "..\CSharpExt\Noggog.WPF\Noggog.WPF.csproj", "{BCBEB6F3-9D2F-4491-8DDF-7E711B1F5252}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -41,10 +47,6 @@ Global
 		{6AE0A041-3A4F-4DFA-A261-F1B729C2E8F8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6AE0A041-3A4F-4DFA-A261-F1B729C2E8F8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6AE0A041-3A4F-4DFA-A261-F1B729C2E8F8}.Release|Any CPU.Build.0 = Release|Any CPU
-		{ED277F36-A22E-43A0-839D-B175760B206B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{ED277F36-A22E-43A0-839D-B175760B206B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{ED277F36-A22E-43A0-839D-B175760B206B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{ED277F36-A22E-43A0-839D-B175760B206B}.Release|Any CPU.Build.0 = Release|Any CPU
 		{75BF59D8-CECA-4E90-912A-BDFC4889E755}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{75BF59D8-CECA-4E90-912A-BDFC4889E755}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{75BF59D8-CECA-4E90-912A-BDFC4889E755}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -65,6 +67,22 @@ Global
 		{92FED143-343E-4A3B-9818-18F81B87EE71}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{92FED143-343E-4A3B-9818-18F81B87EE71}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{92FED143-343E-4A3B-9818-18F81B87EE71}.Release|Any CPU.Build.0 = Release|Any CPU
+		{200FCAE7-B82C-469C-BA3A-BCBF4D32DC46}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{200FCAE7-B82C-469C-BA3A-BCBF4D32DC46}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{200FCAE7-B82C-469C-BA3A-BCBF4D32DC46}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{200FCAE7-B82C-469C-BA3A-BCBF4D32DC46}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E869BDD1-88AE-4FDD-97ED-D062ABB7A391}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E869BDD1-88AE-4FDD-97ED-D062ABB7A391}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E869BDD1-88AE-4FDD-97ED-D062ABB7A391}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E869BDD1-88AE-4FDD-97ED-D062ABB7A391}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6C358D5D-1D14-4EE7-B9DE-474F1A263B7A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6C358D5D-1D14-4EE7-B9DE-474F1A263B7A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6C358D5D-1D14-4EE7-B9DE-474F1A263B7A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6C358D5D-1D14-4EE7-B9DE-474F1A263B7A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BCBEB6F3-9D2F-4491-8DDF-7E711B1F5252}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BCBEB6F3-9D2F-4491-8DDF-7E711B1F5252}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BCBEB6F3-9D2F-4491-8DDF-7E711B1F5252}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BCBEB6F3-9D2F-4491-8DDF-7E711B1F5252}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -73,9 +91,11 @@ Global
 		{91116686-76B0-4C94-A6A3-C517326A7E99} = {F6A9DA70-0CBB-4195-9D90-3E7BAC09D365}
 		{E2E3BB22-0E30-4B8D-A69F-C9B330941E4C} = {F6A9DA70-0CBB-4195-9D90-3E7BAC09D365}
 		{6AE0A041-3A4F-4DFA-A261-F1B729C2E8F8} = {F6A9DA70-0CBB-4195-9D90-3E7BAC09D365}
-		{ED277F36-A22E-43A0-839D-B175760B206B} = {F6A9DA70-0CBB-4195-9D90-3E7BAC09D365}
 		{75BF59D8-CECA-4E90-912A-BDFC4889E755} = {F6A9DA70-0CBB-4195-9D90-3E7BAC09D365}
 		{593DFA39-7514-40DA-9B85-4F8FB3C544A5} = {F6A9DA70-0CBB-4195-9D90-3E7BAC09D365}
+		{E869BDD1-88AE-4FDD-97ED-D062ABB7A391} = {F6A9DA70-0CBB-4195-9D90-3E7BAC09D365}
+		{6C358D5D-1D14-4EE7-B9DE-474F1A263B7A} = {F6A9DA70-0CBB-4195-9D90-3E7BAC09D365}
+		{BCBEB6F3-9D2F-4491-8DDF-7E711B1F5252} = {F6A9DA70-0CBB-4195-9D90-3E7BAC09D365}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B61C2989-4134-442C-B3D9-2D3FDEB250EF}

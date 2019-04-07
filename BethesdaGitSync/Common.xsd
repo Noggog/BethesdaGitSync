@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="us-ascii"?>
+<xs:schema targetNamespace="BethesdaGitSync" elementFormDefault="qualified" xmlns="BethesdaGitSync" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+   <xs:complexType name="NullableValueType">
+      <xs:attribute name="value" use="optional" />
+   </xs:complexType>
+   <xs:complexType name="ValueType">
+      <xs:attribute name="value" use="required" />
+   </xs:complexType>
+</xs:schema>

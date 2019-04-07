@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="Windows-1252"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -56,9 +56,16 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Settings\Mapping_LoquiGenerated.cs" />
-    <Compile Include="Settings\ProtocolDefinition_GitConverter.cs" />
-    <Compile Include="Settings\Settings_LoquiGenerated.cs" />
+    <Compile Include="VMs\MappingSettingsVM.cs" />
+    <Compile Include="XAML\MappingSettingsView.xaml.cs">
+      <DependentUpon>MappingSettingsView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Settings\Mapping_LoquiGenerated.cs">
+      <DependentUpon>Settings.xml</DependentUpon>
+    </Compile>
+    <Compile Include="Settings\Settings_LoquiGenerated.cs">
+      <DependentUpon>Settings.xml</DependentUpon>
+    </Compile>
     <Compile Include="VMs\MainVM.cs" />
     <Compile Include="VMs\MappingVM.cs" />
     <Compile Include="XAML\MainWindow.xaml.cs">
@@ -71,6 +78,10 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="XAML\MappingSettingsView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="XAML\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -79,6 +90,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Compile Include="ProtocolDefinition_BethesdaGitSync.cs" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs">
@@ -107,10 +119,13 @@
     </None>
     <None Include="Settings\Mapping.xsd">
       <SubType>Designer</SubType>
+      <DependentUpon>Settings.xml</DependentUpon>
     </None>
     <None Include="Settings\Settings.xsd">
       <SubType>Designer</SubType>
+      <DependentUpon>Settings.xml</DependentUpon>
     </None>
+    <None Include="Common.xsd" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -134,13 +149,13 @@
       <Project>{e2e3bb22-0e30-4b8d-a69f-c9b330941e4c}</Project>
       <Name>CSharpExt</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\CSharpExt\Noggog.WPF\Noggog.WPF.csproj">
+      <Project>{bcbeb6f3-9d2f-4491-8ddf-7e711b1f5252}</Project>
+      <Name>Noggog.WPF</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\DynamicData\DynamicData\DynamicData.csproj">
       <Project>{91116686-76b0-4c94-a6a3-c517326a7e99}</Project>
       <Name>DynamicData</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Loqui\Loqui.Presentation\Loqui.Presentation.csproj">
-      <Project>{ed277f36-a22e-43a0-839d-b175760b206b}</Project>
-      <Name>Loqui.Presentation</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Loqui\Loqui\Loqui.csproj">
       <Project>{6ae0a041-3a4f-4dfa-a261-f1b729c2e8f8}</Project>

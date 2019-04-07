@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MahApps.Metro;
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
@@ -17,7 +18,7 @@ namespace BethesdaGitSync
         {
             base.OnStartup(e);
             var mainWindow = new MainWindow();
-            mainWindow.DataContext = new MainVM();
+            mainWindow.DataContext = new MainVM(mainWindow);
             mainWindow.Show();
         }
     }

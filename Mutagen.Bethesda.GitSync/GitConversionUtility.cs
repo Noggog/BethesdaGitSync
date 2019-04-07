@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Mutagen.Bethesda.GitSync
 {
@@ -12,7 +13,7 @@ namespace Mutagen.Bethesda.GitSync
     {
         public enum Error { None, DidNotExist, ModKey, Corrupted }
 
-        public static Error ConvertToBinary<M>(
+        public static async Task<Error> ConvertToBinary<M>(
             DirectoryPath xmlFolderPath,
             FilePath binaryTargetPath,
             GitConversionInstructions<M> instr,
@@ -33,13 +34,13 @@ namespace Mutagen.Bethesda.GitSync
             using (var tmpFolder = new TempFolder(deleteAfter: true))
             {
                 var targetTempPath = new FilePath(Path.Combine(tmpFolder.Dir.Path, "MutagenGitTemp"));
-                var xmlInMod = instr.CreateXmlFolder(xmlFolderPath);
-                instr.WriteBinary(xmlInMod, targetTempPath.Path);
+                var xmlInMod = await instr.CreateXmlFolder(xmlFolderPath);
+                await instr.WriteBinary(xmlInMod, targetTempPath.Path);
                 if (checkCorrectness)
                 {
                     var rexportPath = Path.Combine(tmpFolder.Dir.Path, "Reexport");
-                    var reimport = instr.CreateBinary(targetTempPath.Path);
-                    instr.WriteXmlFolder(reimport, new DirectoryPath(rexportPath));
+                    var reimport = await instr.CreateBinary(targetTempPath.Path);
+                    await instr.WriteXmlFolder(reimport, new DirectoryPath(rexportPath));
                     if (!FileComparison.FoldersAreEqual(
                         xmlFolderPath,
                         new DirectoryPath(rexportPath)))
@@ -65,7 +66,7 @@ namespace Mutagen.Bethesda.GitSync
             return Error.None;
         }
 
-        public static Error ConvertToFolder<M>(
+        public static async Task<Error> ConvertToFolder<M>(
             FilePath binaryPath,
             DirectoryPath xmlFolderTargetPath,
             GitConversionInstructions<M> instr,
@@ -86,13 +87,13 @@ namespace Mutagen.Bethesda.GitSync
             using (var tmpFolder = new TempFolder(deleteAfter: true))
             {
                 var targetTempPath = new DirectoryPath(Path.Combine(tmpFolder.Dir.Path, "Export"));
-                var binInMod = instr.CreateBinary(binaryPath);
-                instr.WriteXmlFolder(binInMod, targetTempPath);
+                var binInMod = await instr.CreateBinary(binaryPath);
+                await instr.WriteXmlFolder(binInMod, targetTempPath);
                 if (checkCorrectness)
                 {
                     var rexportPath = Path.Combine(tmpFolder.Dir.Path, "Reexport");
-                    var reimport = instr.CreateXmlFolder(targetTempPath);
-                    instr.WriteBinary(reimport, rexportPath);
+                    var reimport = await instr.CreateXmlFolder(targetTempPath);
+                    await instr.WriteBinary(reimport, rexportPath);
                     if (!FileComparison.FilesAreEqual(
                         new FilePath(binaryPath.Path),
                         new FilePath(rexportPath)))

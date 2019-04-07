@@ -2,18 +2,18 @@
    <ParentRepos>
       <RepoListing>
          <Nickname>CSharpExt</Nickname>
-         <Sha>8e20dc7929eda0e1b4e73f0c71e7716472038308</Sha>
+         <Sha>63ddba9655f4e1d8efe5f8db2ec7244f774988d1</Sha>
          <Path>../CSharpExt</Path>
-         <CommitDate>03-26-2019 21:04:31</CommitDate>
-         <Description>Nuget updates</Description>
+         <CommitDate>04-07-2019 13:22:08</CommitDate>
+         <Description>Some typical WPF converters</Description>
          <Author>Justin Swanson</Author>
       </RepoListing>
       <RepoListing>
          <Nickname>Loqui</Nickname>
-         <Sha>206d3e8a06b99124526731563f0987f6c61b253a</Sha>
+         <Sha>34da5d2bb8d23de3b47ddaa1eb78e2dcd8564ac0</Sha>
          <Path>../Loqui</Path>
-         <CommitDate>03-26-2019 18:53:56</CommitDate>
-         <Description>Added a license</Description>
+         <CommitDate>03-30-2019 00:19:45</CommitDate>
+         <Description>Adjusted some new keywords</Description>
          <Author>Justin Swanson</Author>
       </RepoListing>
       <RepoListing>
@@ -26,10 +26,10 @@
       </RepoListing>
       <RepoListing>
          <Nickname>Mutagen</Nickname>
-         <Sha>9994dd19dd19f28e58cf15ac874733b83816fda8</Sha>
+         <Sha>21d553248f05366089e2a07f63a19b1b7286d30a</Sha>
          <Path>../Mutagen</Path>
-         <CommitDate>03-26-2019 21:49:21</CommitDate>
-         <Description>Added a license</Description>
+         <CommitDate>04-06-2019 23:54:31</CommitDate>
+         <Description>Some xml task fixing</Description>
          <Author>Justin Swanson</Author>
       </RepoListing>
    </ParentRepos>

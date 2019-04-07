@@ -27,23 +27,40 @@
         </Controls:WindowCommands>
     </Controls:MetroWindow.RightWindowCommands>
     <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="35" />
-            <ColumnDefinition Width="*" />
-            <ColumnDefinition Width="35" />
-        </Grid.ColumnDefinitions>
-        <Button Grid.Column="0" ToolTip="Sync selected mappings from Xml folder representation to Bethesda mod format.">
-            <icon:PackIconOcticons Kind="FileBinary" />
-        </Button>
-        <ListBox Grid.Column="1" ItemsSource="{Binding Mappings}">
-            <ListBox.ItemTemplate>
-                <DataTemplate>
-                    <local:MappingView />
-                </DataTemplate>
-            </ListBox.ItemTemplate>
-        </ListBox>
-        <Button Grid.Column="2">
-            <icon:PackIconMaterial Kind="Xml" ToolTip="Sync selected mappings from Bethesda mod format to Xml folder representation." />
-        </Button>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="35" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="35" />
+            </Grid.ColumnDefinitions>
+            <Button Grid.Column="0" ToolTip="Sync selected mappings from Git folder representation to Bethesda mod format.">
+                <icon:PackIconOcticons Kind="FileBinary" />
+            </Button>
+            <ListBox
+                Grid.Column="1"
+                ItemsSource="{Binding Mappings}"
+                SelectionMode="Extended">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <local:MappingView />
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+            <Button Grid.Column="2">
+                <icon:PackIconMaterial Kind="Git" ToolTip="Sync selected mappings from Bethesda mod format to Git folder representation." />
+            </Button>
+        </Grid>
+        <Grid DataContext="{Binding MappingEditorVM}" Visibility="{Binding TargetMapping, Converter={StaticResource IsNotNullVisibilityConverter}, FallbackValue=Collapsed}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <local:MappingSettingsView Grid.Row="0" />
+            <Rectangle
+                Grid.Row="1"
+                Fill="Black"
+                Opacity="0.75" />
+        </Grid>
     </Grid>
 </Controls:MetroWindow>
+
