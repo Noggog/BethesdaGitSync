@@ -50,7 +50,7 @@ namespace BethesdaGitSync
         public String Nickname
         {
             get => this._Nickname;
-            set => this.RaiseAndSetIfChanged(ref this._Nickname, value, nameof(Nickname));
+            set => this.RaiseAndSetIfReferenceChanged(ref this._Nickname, value, nameof(Nickname));
         }
         #endregion
         #region BinaryPath
@@ -68,28 +68,6 @@ namespace BethesdaGitSync
             get => this._FolderPath;
             set => this.RaiseAndSetIfChanged(ref this._FolderPath, value, nameof(FolderPath));
         }
-        #endregion
-
-        #region Loqui Getter Interface
-
-        protected object GetNthObject(ushort index) => MappingCommon.GetNthObject(index, this);
-        object ILoquiObjectGetter.GetNthObject(ushort index) => this.GetNthObject(index);
-
-        protected bool GetNthObjectHasBeenSet(ushort index) => MappingCommon.GetNthObjectHasBeenSet(index, this);
-        bool ILoquiObjectGetter.GetNthObjectHasBeenSet(ushort index) => this.GetNthObjectHasBeenSet(index);
-
-        protected void UnsetNthObject(ushort index, NotifyingUnsetParameters cmds) => MappingCommon.UnsetNthObject(index, this, cmds);
-        void ILoquiObjectSetter.UnsetNthObject(ushort index, NotifyingUnsetParameters cmds) => this.UnsetNthObject(index, cmds);
-
-        #endregion
-
-        #region Loqui Interface
-        protected void SetNthObjectHasBeenSet(ushort index, bool on)
-        {
-            MappingCommon.SetNthObjectHasBeenSet(index, on, this);
-        }
-        void ILoquiObjectSetter.SetNthObjectHasBeenSet(ushort index, bool on) => this.SetNthObjectHasBeenSet(index, on);
-
         #endregion
 
         IMask<bool> IEqualsMask<Mapping>.GetEqualsMask(Mapping rhs, EqualsMaskHelper.Include include) => MappingCommon.GetEqualsMask(this, rhs, include);
@@ -126,9 +104,9 @@ namespace BethesdaGitSync
         public bool Equals(Mapping rhs)
         {
             if (rhs == null) return false;
-            if (!object.Equals(this.Nickname, rhs.Nickname)) return false;
-            if (!object.Equals(this.BinaryPath, rhs.BinaryPath)) return false;
-            if (!object.Equals(this.FolderPath, rhs.FolderPath)) return false;
+            if (!string.Equals(this.Nickname, rhs.Nickname)) return false;
+            if (!string.Equals(this.BinaryPath, rhs.BinaryPath)) return false;
+            if (!string.Equals(this.FolderPath, rhs.FolderPath)) return false;
             return true;
         }
 
@@ -298,15 +276,13 @@ namespace BethesdaGitSync
         #region Xml Copy In
         public void CopyIn_Xml(
             XElement node,
-            MissingCreate missing = MissingCreate.New,
-            NotifyingFireParameters cmds = null)
+            MissingCreate missing = MissingCreate.New)
         {
             CopyIn_Xml_Internal(
                 missing: missing,
                 node: node,
                 errorMask: null,
-                translationMask: null,
-                cmds: cmds);
+                translationMask: null);
         }
 
         public virtual void CopyIn_Xml(
@@ -314,16 +290,14 @@ namespace BethesdaGitSync
             out Mapping_ErrorMask errorMask,
             Mapping_TranslationMask translationMask = null,
             MissingCreate missing = MissingCreate.New,
-            bool doMasks = true,
-            NotifyingFireParameters cmds = null)
+            bool doMasks = true)
         {
             ErrorMaskBuilder errorMaskBuilder = doMasks ? new ErrorMaskBuilder() : null;
             CopyIn_Xml_Internal(
                 missing: missing,
                 node: node,
                 errorMask: errorMaskBuilder,
-                translationMask: translationMask?.GetCrystal(),
-                cmds: cmds);
+                translationMask: translationMask?.GetCrystal());
             errorMask = Mapping_ErrorMask.Factory(errorMaskBuilder);
         }
 
@@ -331,8 +305,7 @@ namespace BethesdaGitSync
             XElement node,
             ErrorMaskBuilder errorMask,
             TranslationCrystal translationMask,
-            MissingCreate missing = MissingCreate.New,
-            NotifyingFireParameters cmds = null)
+            MissingCreate missing = MissingCreate.New)
         {
             LoquiXmlTranslation<Mapping>.Instance.CopyIn(
                 missing: missing,
@@ -340,20 +313,17 @@ namespace BethesdaGitSync
                 item: this,
                 skipProtected: true,
                 errorMask: errorMask,
-                translationMask: translationMask,
-                cmds: cmds);
+                translationMask: translationMask);
         }
 
         public void CopyIn_Xml(
             string path,
-            MissingCreate missing = MissingCreate.New,
-            NotifyingFireParameters cmds = null)
+            MissingCreate missing = MissingCreate.New)
         {
             var node = System.IO.File.Exists(path) ? XDocument.Load(path).Root : null;
             this.CopyIn_Xml(
                 missing: missing,
-                node: node,
-                cmds: cmds);
+                node: node);
         }
 
         public void CopyIn_Xml(
@@ -361,7 +331,6 @@ namespace BethesdaGitSync
             out Mapping_ErrorMask errorMask,
             Mapping_TranslationMask translationMask,
             MissingCreate missing = MissingCreate.New,
-            NotifyingFireParameters cmds = null,
             bool doMasks = true)
         {
             var node = System.IO.File.Exists(path) ? XDocument.Load(path).Root : null;
@@ -370,20 +339,17 @@ namespace BethesdaGitSync
                 node: node,
                 errorMask: out errorMask,
                 translationMask: translationMask,
-                cmds: cmds,
                 doMasks: doMasks);
         }
 
         public void CopyIn_Xml(
             Stream stream,
-            MissingCreate missing = MissingCreate.New,
-            NotifyingFireParameters cmds = null)
+            MissingCreate missing = MissingCreate.New)
         {
             var node = XDocument.Load(stream).Root;
             this.CopyIn_Xml(
                 missing: missing,
-                node: node,
-                cmds: cmds);
+                node: node);
         }
 
         public void CopyIn_Xml(
@@ -391,7 +357,6 @@ namespace BethesdaGitSync
             out Mapping_ErrorMask errorMask,
             Mapping_TranslationMask translationMask,
             MissingCreate missing = MissingCreate.New,
-            NotifyingFireParameters cmds = null,
             bool doMasks = true)
         {
             var node = XDocument.Load(stream).Root;
@@ -400,7 +365,6 @@ namespace BethesdaGitSync
                 node: node,
                 errorMask: out errorMask,
                 translationMask: translationMask,
-                cmds: cmds,
                 doMasks: doMasks);
         }
 
@@ -606,32 +570,27 @@ namespace BethesdaGitSync
             return ret;
         }
 
-        public void CopyFieldsFrom(
-            IMappingGetter rhs,
-            NotifyingFireParameters cmds = null)
+        public void CopyFieldsFrom(IMappingGetter rhs)
         {
             this.CopyFieldsFrom(
                 rhs: (IMappingGetter)rhs,
                 def: null,
                 doMasks: false,
                 errorMask: out var errMask,
-                copyMask: null,
-                cmds: cmds);
+                copyMask: null);
         }
 
         public void CopyFieldsFrom(
             IMappingGetter rhs,
             Mapping_CopyMask copyMask,
-            IMappingGetter def = null,
-            NotifyingFireParameters cmds = null)
+            IMappingGetter def = null)
         {
             this.CopyFieldsFrom(
                 rhs: rhs,
                 def: def,
                 doMasks: false,
                 errorMask: out var errMask,
-                copyMask: copyMask,
-                cmds: cmds);
+                copyMask: copyMask);
         }
 
         public void CopyFieldsFrom(
@@ -639,7 +598,6 @@ namespace BethesdaGitSync
             out Mapping_ErrorMask errorMask,
             Mapping_CopyMask copyMask = null,
             IMappingGetter def = null,
-            NotifyingFireParameters cmds = null,
             bool doMasks = true)
         {
             var errorMaskBuilder = new ErrorMaskBuilder();
@@ -648,8 +606,7 @@ namespace BethesdaGitSync
                 rhs: rhs,
                 def: def,
                 errorMask: errorMaskBuilder,
-                copyMask: copyMask,
-                cmds: cmds);
+                copyMask: copyMask);
             errorMask = Mapping_ErrorMask.Factory(errorMaskBuilder);
         }
 
@@ -658,7 +615,6 @@ namespace BethesdaGitSync
             ErrorMaskBuilder errorMask,
             Mapping_CopyMask copyMask = null,
             IMappingGetter def = null,
-            NotifyingFireParameters cmds = null,
             bool doMasks = true)
         {
             MappingCommon.CopyFieldsFrom(
@@ -666,12 +622,10 @@ namespace BethesdaGitSync
                 rhs: rhs,
                 def: def,
                 errorMask: errorMask,
-                copyMask: copyMask,
-                cmds: cmds);
+                copyMask: copyMask);
         }
 
-        void ILoquiObjectSetter.SetNthObject(ushort index, object obj, NotifyingFireParameters cmds) => this.SetNthObject(index, obj, cmds);
-        protected void SetNthObject(ushort index, object obj, NotifyingFireParameters cmds = null)
+        protected void SetNthObject(ushort index, object obj)
         {
             Mapping_FieldIndex enu = (Mapping_FieldIndex)index;
             switch (enu)
@@ -690,17 +644,17 @@ namespace BethesdaGitSync
             }
         }
 
-        partial void ClearPartial(NotifyingUnsetParameters cmds);
+        partial void ClearPartial();
 
-        protected void CallClearPartial_Internal(NotifyingUnsetParameters cmds)
+        protected void CallClearPartial_Internal()
         {
-            ClearPartial(cmds);
+            ClearPartial();
         }
 
-        public void Clear(NotifyingUnsetParameters cmds = null)
+        public void Clear()
         {
-            CallClearPartial_Internal(cmds);
-            MappingCommon.Clear(this, cmds);
+            CallClearPartial_Internal();
+            MappingCommon.Clear(this);
         }
 
 
@@ -735,11 +689,6 @@ namespace BethesdaGitSync
                     throw new ArgumentException($"Unknown enum type: {enu}");
             }
         }
-        public static void CopyIn(IEnumerable<KeyValuePair<ushort, object>> fields, Mapping obj)
-        {
-            ILoquiObjectExt.CopyFieldsIn(obj, fields, def: null, skipProtected: false, cmds: null);
-        }
-
     }
     #endregion
 
@@ -982,8 +931,7 @@ namespace BethesdaGitSync.Internals
             IMappingGetter rhs,
             IMappingGetter def,
             ErrorMaskBuilder errorMask,
-            Mapping_CopyMask copyMask,
-            NotifyingFireParameters cmds = null)
+            Mapping_CopyMask copyMask)
         {
             if (copyMask?.Nickname ?? true)
             {
@@ -1040,84 +988,7 @@ namespace BethesdaGitSync.Internals
 
         #endregion
 
-        public static void SetNthObjectHasBeenSet(
-            ushort index,
-            bool on,
-            IMapping obj,
-            NotifyingFireParameters cmds = null)
-        {
-            Mapping_FieldIndex enu = (Mapping_FieldIndex)index;
-            switch (enu)
-            {
-                case Mapping_FieldIndex.Nickname:
-                case Mapping_FieldIndex.BinaryPath:
-                case Mapping_FieldIndex.FolderPath:
-                    if (on) break;
-                    throw new ArgumentException("Tried to unset a field which does not have this functionality." + index);
-                default:
-                    throw new ArgumentException($"Index is out of range: {index}");
-            }
-        }
-
-        public static void UnsetNthObject(
-            ushort index,
-            IMapping obj,
-            NotifyingUnsetParameters cmds = null)
-        {
-            Mapping_FieldIndex enu = (Mapping_FieldIndex)index;
-            switch (enu)
-            {
-                case Mapping_FieldIndex.Nickname:
-                    obj.Nickname = default(String);
-                    break;
-                case Mapping_FieldIndex.BinaryPath:
-                    obj.BinaryPath = default(FilePath);
-                    break;
-                case Mapping_FieldIndex.FolderPath:
-                    obj.FolderPath = default(DirectoryPath);
-                    break;
-                default:
-                    throw new ArgumentException($"Index is out of range: {index}");
-            }
-        }
-
-        public static bool GetNthObjectHasBeenSet(
-            ushort index,
-            IMapping obj)
-        {
-            Mapping_FieldIndex enu = (Mapping_FieldIndex)index;
-            switch (enu)
-            {
-                case Mapping_FieldIndex.Nickname:
-                case Mapping_FieldIndex.BinaryPath:
-                case Mapping_FieldIndex.FolderPath:
-                    return true;
-                default:
-                    throw new ArgumentException($"Index is out of range: {index}");
-            }
-        }
-
-        public static object GetNthObject(
-            ushort index,
-            IMappingGetter obj)
-        {
-            Mapping_FieldIndex enu = (Mapping_FieldIndex)index;
-            switch (enu)
-            {
-                case Mapping_FieldIndex.Nickname:
-                    return obj.Nickname;
-                case Mapping_FieldIndex.BinaryPath:
-                    return obj.BinaryPath;
-                case Mapping_FieldIndex.FolderPath:
-                    return obj.FolderPath;
-                default:
-                    throw new ArgumentException($"Index is out of range: {index}");
-            }
-        }
-
-        public static void Clear(
-            IMapping item,
-            NotifyingUnsetParameters cmds = null)
+        public static void Clear(IMapping item)
         {
             item.Nickname = default(String);
             item.BinaryPath = default(FilePath);
@@ -1145,9 +1016,9 @@ namespace BethesdaGitSync.Internals
             EqualsMaskHelper.Include include = EqualsMaskHelper.Include.All)
         {
             if (rhs == null) return;
-            ret.Nickname = object.Equals(item.Nickname, rhs.Nickname);
-            ret.BinaryPath = object.Equals(item.BinaryPath, rhs.BinaryPath);
-            ret.FolderPath = object.Equals(item.FolderPath, rhs.FolderPath);
+            ret.Nickname = string.Equals(item.Nickname, rhs.Nickname);
+            ret.BinaryPath = string.Equals(item.BinaryPath, rhs.BinaryPath);
+            ret.FolderPath = string.Equals(item.FolderPath, rhs.FolderPath);
         }
 
         public static string ToString(
@@ -1320,81 +1191,90 @@ namespace BethesdaGitSync.Internals
             switch (name)
             {
                 case "Nickname":
-                    try
+                    if ((translationMask?.GetShouldTranslate((int)Mapping_FieldIndex.Nickname) ?? true))
                     {
-                        errorMask?.PushIndex((int)Mapping_FieldIndex.Nickname);
-                        if (StringXmlTranslation.Instance.Parse(
-                            node: node,
-                            item: out String NicknameParse,
-                            errorMask: errorMask))
+                        try
                         {
-                            item.Nickname = NicknameParse;
+                            errorMask?.PushIndex((int)Mapping_FieldIndex.Nickname);
+                            if (StringXmlTranslation.Instance.Parse(
+                                node: node,
+                                item: out String NicknameParse,
+                                errorMask: errorMask))
+                            {
+                                item.Nickname = NicknameParse;
+                            }
+                            else
+                            {
+                                item.Nickname = default(String);
+                            }
                         }
-                        else
+                        catch (Exception ex)
+                        when (errorMask != null)
                         {
-                            item.Nickname = default(String);
+                            errorMask.ReportException(ex);
                         }
-                    }
-                    catch (Exception ex)
-                    when (errorMask != null)
-                    {
-                        errorMask.ReportException(ex);
-                    }
-                    finally
-                    {
-                        errorMask?.PopIndex();
+                        finally
+                        {
+                            errorMask?.PopIndex();
+                        }
                     }
                     break;
                 case "BinaryPath":
-                    try
+                    if ((translationMask?.GetShouldTranslate((int)Mapping_FieldIndex.BinaryPath) ?? true))
                     {
-                        errorMask?.PushIndex((int)Mapping_FieldIndex.BinaryPath);
-                        if (FilePathXmlTranslation.Instance.Parse(
-                            node: node,
-                            item: out FilePath BinaryPathParse,
-                            errorMask: errorMask))
+                        try
                         {
-                            item.BinaryPath = BinaryPathParse;
+                            errorMask?.PushIndex((int)Mapping_FieldIndex.BinaryPath);
+                            if (FilePathXmlTranslation.Instance.Parse(
+                                node: node,
+                                item: out FilePath BinaryPathParse,
+                                errorMask: errorMask))
+                            {
+                                item.BinaryPath = BinaryPathParse;
+                            }
+                            else
+                            {
+                                item.BinaryPath = default(FilePath);
+                            }
                         }
-                        else
+                        catch (Exception ex)
+                        when (errorMask != null)
                         {
-                            item.BinaryPath = default(FilePath);
+                            errorMask.ReportException(ex);
                         }
-                    }
-                    catch (Exception ex)
-                    when (errorMask != null)
-                    {
-                        errorMask.ReportException(ex);
-                    }
-                    finally
-                    {
-                        errorMask?.PopIndex();
+                        finally
+                        {
+                            errorMask?.PopIndex();
+                        }
                     }
                     break;
                 case "FolderPath":
-                    try
+                    if ((translationMask?.GetShouldTranslate((int)Mapping_FieldIndex.FolderPath) ?? true))
                     {
-                        errorMask?.PushIndex((int)Mapping_FieldIndex.FolderPath);
-                        if (DirectoryPathXmlTranslation.Instance.Parse(
-                            node: node,
-                            item: out DirectoryPath FolderPathParse,
-                            errorMask: errorMask))
+                        try
                         {
-                            item.FolderPath = FolderPathParse;
+                            errorMask?.PushIndex((int)Mapping_FieldIndex.FolderPath);
+                            if (DirectoryPathXmlTranslation.Instance.Parse(
+                                node: node,
+                                item: out DirectoryPath FolderPathParse,
+                                errorMask: errorMask))
+                            {
+                                item.FolderPath = FolderPathParse;
+                            }
+                            else
+                            {
+                                item.FolderPath = default(DirectoryPath);
+                            }
                         }
-                        else
+                        catch (Exception ex)
+                        when (errorMask != null)
                         {
-                            item.FolderPath = default(DirectoryPath);
+                            errorMask.ReportException(ex);
                         }
-                    }
-                    catch (Exception ex)
-                    when (errorMask != null)
-                    {
-                        errorMask.ReportException(ex);
-                    }
-                    finally
-                    {
-                        errorMask?.PopIndex();
+                        finally
+                        {
+                            errorMask?.PopIndex();
+                        }
                     }
                     break;
                 default:

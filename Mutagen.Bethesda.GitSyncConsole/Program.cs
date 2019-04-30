@@ -35,13 +35,7 @@ namespace Mutagen.Bethesda.GitSyncConsole
                 return;
             }
 
-            var instr = new GitConversionInstructions<OblivionMod>()
-            {
-                CreateBinary = async (f) => OblivionMod.Create_Binary(f.Path, modKey),
-                CreateXmlFolder = async (f) => await OblivionMod.Create_Xml_Folder(f.Path, modKey),
-                WriteBinary = async (m, f) => m.Write_Binary(f.Path, modKey),
-                WriteXmlFolder = async (m, f) => await m.Write_XmlFolder(f.Path)
-            };
+            var instr = GitConversionInstructions.Oblivion(modKey);
 
             GitConversionUtility.Error error;
             switch (type)

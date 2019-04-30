@@ -15,12 +15,10 @@
     BorderBrush="{DynamicResource AccentColorBrush}"
     BorderThickness="1"
     SaveWindowPosition="True"
+    ShowMaxRestoreButton="False"
     mc:Ignorable="d">
     <Controls:MetroWindow.RightWindowCommands>
         <Controls:WindowCommands>
-            <Button Command="{Binding AddCommand}" ToolTip="Add a new mapping">
-                <icon:PackIconFontAwesome Kind="PlusSolid" />
-            </Button>
             <Button Command="{Binding HelpCommand}" ToolTip="Help and About Information">
                 <icon:PackIconMaterial Kind="HelpCircle" />
             </Button>
@@ -29,26 +27,102 @@
     <Grid>
         <Grid>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="35" />
+                <ColumnDefinition Width="15" />
+                <ColumnDefinition Width="25" />
                 <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="35" />
+                <ColumnDefinition Width="25" />
+                <ColumnDefinition Width="15" />
             </Grid.ColumnDefinitions>
-            <Button Grid.Column="0" ToolTip="Sync selected mappings from Git folder representation to Bethesda mod format.">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <Button
+                Grid.Row="0"
+                Grid.Column="0"
+                Grid.ColumnSpan="2"
+                Command="{Binding SyncToBinaryCommand}"
+                Focusable="False"
+                ToolTip="Sync selected mappings from Git folder representation to Bethesda mod format.">
                 <icon:PackIconOcticons Kind="FileBinary" />
             </Button>
+            <Button
+                Grid.Row="1"
+                Grid.RowSpan="2"
+                Grid.Column="0"
+                Margin="0,-1,0,0"
+                BorderThickness="1,0"
+                Command="{Binding SyncToBinaryCommand}"
+                Focusable="False"
+                ToolTip="Sync selected mappings from Git folder representation to Bethesda mod format." />
+            <ComboBox
+                Grid.Row="0"
+                Grid.Column="2"
+                BorderThickness="0" />
+            <Border
+                Grid.Row="0"
+                Grid.Column="2"
+                BorderBrush="{StaticResource SeparationLineBrush}"
+                BorderThickness="0,0,0,1" />
             <ListBox
+                Grid.Row="1"
                 Grid.Column="1"
+                Grid.ColumnSpan="3"
                 ItemsSource="{Binding Mappings}"
                 SelectionMode="Extended">
+                <ListBox.ItemContainerStyle>
+                    <Style BasedOn="{StaticResource MetroListBoxItem}" TargetType="{x:Type ListBoxItem}">
+                        <Setter Property="Padding" Value="0" />
+                        <Setter Property="IsSelected" Value="{Binding IsSelected}" />
+                    </Style>
+                </ListBox.ItemContainerStyle>
                 <ListBox.ItemTemplate>
                     <DataTemplate>
                         <local:MappingView />
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>
-            <Button Grid.Column="2">
-                <icon:PackIconMaterial Kind="Git" ToolTip="Sync selected mappings from Bethesda mod format to Git folder representation." />
+            <Button
+                Grid.Row="0"
+                Grid.Column="3"
+                Grid.ColumnSpan="2"
+                Command="{Binding SyncToGitCommand}"
+                Focusable="False"
+                ToolTip="Sync selected mappings from Bethesda mod format to Git folder representation.">
+                <icon:PackIconMaterial Kind="Git" />
             </Button>
+            <Button
+                Grid.Row="1"
+                Grid.RowSpan="2"
+                Grid.Column="4"
+                Margin="0,-1,0,0"
+                BorderThickness="1,0"
+                Command="{Binding SyncToGitCommand}"
+                Focusable="False"
+                ToolTip="Sync selected mappings from Bethesda mod format to Git folder representation." />
+            <Border
+                Grid.Row="2"
+                Grid.Column="1"
+                Grid.ColumnSpan="3"
+                Height="25"
+                BorderBrush="{StaticResource SeparationLineBrush}"
+                BorderThickness="0,1,0,0">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <Button
+                        Grid.Column="1"
+                        BorderThickness="0"
+                        Command="{Binding AddCommand}"
+                        Style="{StaticResource NoBackgroundButtonStyle}"
+                        ToolTip="Add a new mapping">
+                        <icon:PackIconFontAwesome Height="10" Kind="PlusSolid" />
+                    </Button>
+                </Grid>
+            </Border>
         </Grid>
         <Grid DataContext="{Binding MappingEditorVM}" Visibility="{Binding TargetMapping, Converter={StaticResource IsNotNullVisibilityConverter}, FallbackValue=Collapsed}">
             <Grid.RowDefinitions>

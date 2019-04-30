@@ -11,55 +11,57 @@
     d:DesignHeight="50"
     d:DesignWidth="300"
     mc:Ignorable="d">
-    <Grid
-        x:Name="FramingGrid"
-        Height="30"
-        Background="Transparent">
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto" />
-            <ColumnDefinition Width="Auto" />
-            <ColumnDefinition Width="*" />
-            <ColumnDefinition Width="Auto" />
-            <ColumnDefinition Width="Auto" />
-        </Grid.ColumnDefinitions>
-        <Rectangle
-            Grid.Column="0"
-            Width="6"
-            Fill="#fc9c16"
-            Visibility="{Binding BinaryPathValid, Converter={StaticResource VisibilityHiddenConverter}, ConverterParameter=False}">
-            <Rectangle.ToolTip>
-                <TextBlock Text="{Binding Mapping.BinaryPath, StringFormat='Binary path did not exist:&#x0a;\{0\}'}" />
-            </Rectangle.ToolTip>
-        </Rectangle>
-        <TextBlock
-            Grid.Column="1"
-            Margin="5,4"
-            VerticalAlignment="Center"
-            Text="{Binding Nickname, FallbackValue=Test}" />
-        <Button
-            Grid.Column="3"
-            Background="Transparent"
-            BorderThickness="0"
-            Command="{Binding OpenSettingsCommand}">
-            <Button.Style>
-                <Style BasedOn="{StaticResource NoBackgroundButtonStyle}" TargetType="Button">
-                    <Style.Triggers>
-                        <DataTrigger Binding="{Binding IsMouseOver, ElementName=FramingGrid}" Value="False">
-                            <Setter Property="Opacity" Value="0.1" />
-                        </DataTrigger>
-                    </Style.Triggers>
-                </Style>
-            </Button.Style>
-            <icon:PackIconMaterial Kind="Settings" />
-        </Button>
-        <Rectangle
-            Grid.Column="4"
-            Width="6"
-            Fill="#fc9c16"
-            Visibility="{Binding FolderPathValid, Converter={StaticResource VisibilityHiddenConverter}, ConverterParameter=False}">
-            <Rectangle.ToolTip>
-                <TextBlock Text="{Binding Mapping.FolderPath, StringFormat='Folder path did not exist:&#x0a;\{0\}'}" />
-            </Rectangle.ToolTip>
-        </Rectangle>
-    </Grid>
+    <UserControl.Resources>
+        <Style x:Key="StatusRectangle" TargetType="Rectangle">
+            <Setter Property="ToolTip" Value="{Binding Message}" />
+            <Setter Property="Fill" Value="Transparent" />
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding Status}" Value="{x:Static local:StatusType.Warning}">
+                    <Setter Property="Fill" Value="#fc9c16" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding Status}" Value="{x:Static local:StatusType.Error}">
+                    <Setter Property="Fill" Value="Red" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding Status}" Value="{x:Static local:StatusType.Success}">
+                    <Setter Property="Fill" Value="Green" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+    </UserControl.Resources>
+    <Border BorderBrush="{StaticResource SeparationLineBrush}" BorderThickness="0,0,0,1">
+        <Grid
+            x:Name="FramingGrid"
+            Height="30"
+            Background="Transparent">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="8" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="8" />
+            </Grid.ColumnDefinitions>
+            <Rectangle
+                Grid.Column="0"
+                DataContext="{Binding BinaryStatus}"
+                Style="{StaticResource StatusRectangle}" />
+            <Rectangle
+                Grid.Column="0"
+                Width="1"
+                HorizontalAlignment="Right"
+                Fill="{StaticResource SeparationLineBrush}" />
+            <TextBlock
+                Grid.Column="1"
+                Margin="5,4"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Text="{Binding Nickname, FallbackValue=Test}" />
+            <Rectangle
+                Grid.Column="2"
+                DataContext="{Binding FolderStatus}"
+                Style="{StaticResource StatusRectangle}" />
+            <Rectangle
+                Grid.Column="2"
+                Width="1"
+                HorizontalAlignment="Left"
+                Fill="{StaticResource SeparationLineBrush}" />
+        </Grid>
+    </Border>
 </UserControl>

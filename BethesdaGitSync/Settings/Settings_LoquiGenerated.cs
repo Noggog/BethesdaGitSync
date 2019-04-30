@@ -70,30 +70,8 @@ namespace BethesdaGitSync
         public String LastReferencedDirectory
         {
             get => this._LastReferencedDirectory;
-            set => this.RaiseAndSetIfChanged(ref this._LastReferencedDirectory, value, nameof(LastReferencedDirectory));
+            set => this.RaiseAndSetIfReferenceChanged(ref this._LastReferencedDirectory, value, nameof(LastReferencedDirectory));
         }
-        #endregion
-
-        #region Loqui Getter Interface
-
-        protected object GetNthObject(ushort index) => SettingsCommon.GetNthObject(index, this);
-        object ILoquiObjectGetter.GetNthObject(ushort index) => this.GetNthObject(index);
-
-        protected bool GetNthObjectHasBeenSet(ushort index) => SettingsCommon.GetNthObjectHasBeenSet(index, this);
-        bool ILoquiObjectGetter.GetNthObjectHasBeenSet(ushort index) => this.GetNthObjectHasBeenSet(index);
-
-        protected void UnsetNthObject(ushort index, NotifyingUnsetParameters cmds) => SettingsCommon.UnsetNthObject(index, this, cmds);
-        void ILoquiObjectSetter.UnsetNthObject(ushort index, NotifyingUnsetParameters cmds) => this.UnsetNthObject(index, cmds);
-
-        #endregion
-
-        #region Loqui Interface
-        protected void SetNthObjectHasBeenSet(ushort index, bool on)
-        {
-            SettingsCommon.SetNthObjectHasBeenSet(index, on, this);
-        }
-        void ILoquiObjectSetter.SetNthObjectHasBeenSet(ushort index, bool on) => this.SetNthObjectHasBeenSet(index, on);
-
         #endregion
 
         IMask<bool> IEqualsMask<Settings>.GetEqualsMask(Settings rhs, EqualsMaskHelper.Include include) => SettingsCommon.GetEqualsMask(this, rhs, include);
@@ -131,7 +109,7 @@ namespace BethesdaGitSync
         {
             if (rhs == null) return false;
             if (!this.Mappings.SequenceEqual(rhs.Mappings)) return false;
-            if (!object.Equals(this.LastReferencedDirectory, rhs.LastReferencedDirectory)) return false;
+            if (!string.Equals(this.LastReferencedDirectory, rhs.LastReferencedDirectory)) return false;
             return true;
         }
 
@@ -300,15 +278,13 @@ namespace BethesdaGitSync
         #region Xml Copy In
         public void CopyIn_Xml(
             XElement node,
-            MissingCreate missing = MissingCreate.New,
-            NotifyingFireParameters cmds = null)
+            MissingCreate missing = MissingCreate.New)
         {
             CopyIn_Xml_Internal(
                 missing: missing,
                 node: node,
                 errorMask: null,
-                translationMask: null,
-                cmds: cmds);
+                translationMask: null);
         }
 
         public virtual void CopyIn_Xml(
@@ -316,16 +292,14 @@ namespace BethesdaGitSync
             out Settings_ErrorMask errorMask,
             Settings_TranslationMask translationMask = null,
             MissingCreate missing = MissingCreate.New,
-            bool doMasks = true,
-            NotifyingFireParameters cmds = null)
+            bool doMasks = true)
         {
             ErrorMaskBuilder errorMaskBuilder = doMasks ? new ErrorMaskBuilder() : null;
             CopyIn_Xml_Internal(
                 missing: missing,
                 node: node,
                 errorMask: errorMaskBuilder,
-                translationMask: translationMask?.GetCrystal(),
-                cmds: cmds);
+                translationMask: translationMask?.GetCrystal());
             errorMask = Settings_ErrorMask.Factory(errorMaskBuilder);
         }
 
@@ -333,8 +307,7 @@ namespace BethesdaGitSync
             XElement node,
             ErrorMaskBuilder errorMask,
             TranslationCrystal translationMask,
-            MissingCreate missing = MissingCreate.New,
-            NotifyingFireParameters cmds = null)
+            MissingCreate missing = MissingCreate.New)
         {
             LoquiXmlTranslation<Settings>.Instance.CopyIn(
                 missing: missing,
@@ -342,20 +315,17 @@ namespace BethesdaGitSync
                 item: this,
                 skipProtected: true,
                 errorMask: errorMask,
-                translationMask: translationMask,
-                cmds: cmds);
+                translationMask: translationMask);
         }
 
         public void CopyIn_Xml(
             string path,
-            MissingCreate missing = MissingCreate.New,
-            NotifyingFireParameters cmds = null)
+            MissingCreate missing = MissingCreate.New)
         {
             var node = System.IO.File.Exists(path) ? XDocument.Load(path).Root : null;
             this.CopyIn_Xml(
                 missing: missing,
-                node: node,
-                cmds: cmds);
+                node: node);
         }
 
         public void CopyIn_Xml(
@@ -363,7 +333,6 @@ namespace BethesdaGitSync
             out Settings_ErrorMask errorMask,
             Settings_TranslationMask translationMask,
             MissingCreate missing = MissingCreate.New,
-            NotifyingFireParameters cmds = null,
             bool doMasks = true)
         {
             var node = System.IO.File.Exists(path) ? XDocument.Load(path).Root : null;
@@ -372,20 +341,17 @@ namespace BethesdaGitSync
                 node: node,
                 errorMask: out errorMask,
                 translationMask: translationMask,
-                cmds: cmds,
                 doMasks: doMasks);
         }
 
         public void CopyIn_Xml(
             Stream stream,
-            MissingCreate missing = MissingCreate.New,
-            NotifyingFireParameters cmds = null)
+            MissingCreate missing = MissingCreate.New)
         {
             var node = XDocument.Load(stream).Root;
             this.CopyIn_Xml(
                 missing: missing,
-                node: node,
-                cmds: cmds);
+                node: node);
         }
 
         public void CopyIn_Xml(
@@ -393,7 +359,6 @@ namespace BethesdaGitSync
             out Settings_ErrorMask errorMask,
             Settings_TranslationMask translationMask,
             MissingCreate missing = MissingCreate.New,
-            NotifyingFireParameters cmds = null,
             bool doMasks = true)
         {
             var node = XDocument.Load(stream).Root;
@@ -402,7 +367,6 @@ namespace BethesdaGitSync
                 node: node,
                 errorMask: out errorMask,
                 translationMask: translationMask,
-                cmds: cmds,
                 doMasks: doMasks);
         }
 
@@ -607,32 +571,27 @@ namespace BethesdaGitSync
             return ret;
         }
 
-        public void CopyFieldsFrom(
-            ISettingsGetter rhs,
-            NotifyingFireParameters cmds = null)
+        public void CopyFieldsFrom(ISettingsGetter rhs)
         {
             this.CopyFieldsFrom(
                 rhs: (ISettingsGetter)rhs,
                 def: null,
                 doMasks: false,
                 errorMask: out var errMask,
-                copyMask: null,
-                cmds: cmds);
+                copyMask: null);
         }
 
         public void CopyFieldsFrom(
             ISettingsGetter rhs,
             Settings_CopyMask copyMask,
-            ISettingsGetter def = null,
-            NotifyingFireParameters cmds = null)
+            ISettingsGetter def = null)
         {
             this.CopyFieldsFrom(
                 rhs: rhs,
                 def: def,
                 doMasks: false,
                 errorMask: out var errMask,
-                copyMask: copyMask,
-                cmds: cmds);
+                copyMask: copyMask);
         }
 
         public void CopyFieldsFrom(
@@ -640,7 +599,6 @@ namespace BethesdaGitSync
             out Settings_ErrorMask errorMask,
             Settings_CopyMask copyMask = null,
             ISettingsGetter def = null,
-            NotifyingFireParameters cmds = null,
             bool doMasks = true)
         {
             var errorMaskBuilder = new ErrorMaskBuilder();
@@ -649,8 +607,7 @@ namespace BethesdaGitSync
                 rhs: rhs,
                 def: def,
                 errorMask: errorMaskBuilder,
-                copyMask: copyMask,
-                cmds: cmds);
+                copyMask: copyMask);
             errorMask = Settings_ErrorMask.Factory(errorMaskBuilder);
         }
 
@@ -659,7 +616,6 @@ namespace BethesdaGitSync
             ErrorMaskBuilder errorMask,
             Settings_CopyMask copyMask = null,
             ISettingsGetter def = null,
-            NotifyingFireParameters cmds = null,
             bool doMasks = true)
         {
             SettingsCommon.CopyFieldsFrom(
@@ -667,12 +623,10 @@ namespace BethesdaGitSync
                 rhs: rhs,
                 def: def,
                 errorMask: errorMask,
-                copyMask: copyMask,
-                cmds: cmds);
+                copyMask: copyMask);
         }
 
-        void ILoquiObjectSetter.SetNthObject(ushort index, object obj, NotifyingFireParameters cmds) => this.SetNthObject(index, obj, cmds);
-        protected void SetNthObject(ushort index, object obj, NotifyingFireParameters cmds = null)
+        protected void SetNthObject(ushort index, object obj)
         {
             Settings_FieldIndex enu = (Settings_FieldIndex)index;
             switch (enu)
@@ -688,17 +642,17 @@ namespace BethesdaGitSync
             }
         }
 
-        partial void ClearPartial(NotifyingUnsetParameters cmds);
+        partial void ClearPartial();
 
-        protected void CallClearPartial_Internal(NotifyingUnsetParameters cmds)
+        protected void CallClearPartial_Internal()
         {
-            ClearPartial(cmds);
+            ClearPartial();
         }
 
-        public void Clear(NotifyingUnsetParameters cmds = null)
+        public void Clear()
         {
-            CallClearPartial_Internal(cmds);
-            SettingsCommon.Clear(this, cmds);
+            CallClearPartial_Internal();
+            SettingsCommon.Clear(this);
         }
 
 
@@ -730,11 +684,6 @@ namespace BethesdaGitSync
                     throw new ArgumentException($"Unknown enum type: {enu}");
             }
         }
-        public static void CopyIn(IEnumerable<KeyValuePair<ushort, object>> fields, Settings obj)
-        {
-            ILoquiObjectExt.CopyFieldsIn(obj, fields, def: null, skipProtected: false, cmds: null);
-        }
-
     }
     #endregion
 
@@ -959,8 +908,7 @@ namespace BethesdaGitSync.Internals
             ISettingsGetter rhs,
             ISettingsGetter def,
             ErrorMaskBuilder errorMask,
-            Settings_CopyMask copyMask,
-            NotifyingFireParameters cmds = null)
+            Settings_CopyMask copyMask)
         {
             if (copyMask?.Mappings.Overall != CopyOption.Skip)
             {
@@ -1018,77 +966,7 @@ namespace BethesdaGitSync.Internals
 
         #endregion
 
-        public static void SetNthObjectHasBeenSet(
-            ushort index,
-            bool on,
-            ISettings obj,
-            NotifyingFireParameters cmds = null)
-        {
-            Settings_FieldIndex enu = (Settings_FieldIndex)index;
-            switch (enu)
-            {
-                case Settings_FieldIndex.Mappings:
-                case Settings_FieldIndex.LastReferencedDirectory:
-                    if (on) break;
-                    throw new ArgumentException("Tried to unset a field which does not have this functionality." + index);
-                default:
-                    throw new ArgumentException($"Index is out of range: {index}");
-            }
-        }
-
-        public static void UnsetNthObject(
-            ushort index,
-            ISettings obj,
-            NotifyingUnsetParameters cmds = null)
-        {
-            Settings_FieldIndex enu = (Settings_FieldIndex)index;
-            switch (enu)
-            {
-                case Settings_FieldIndex.Mappings:
-                    obj.Mappings.Unset();
-                    break;
-                case Settings_FieldIndex.LastReferencedDirectory:
-                    obj.LastReferencedDirectory = default(String);
-                    break;
-                default:
-                    throw new ArgumentException($"Index is out of range: {index}");
-            }
-        }
-
-        public static bool GetNthObjectHasBeenSet(
-            ushort index,
-            ISettings obj)
-        {
-            Settings_FieldIndex enu = (Settings_FieldIndex)index;
-            switch (enu)
-            {
-                case Settings_FieldIndex.Mappings:
-                case Settings_FieldIndex.LastReferencedDirectory:
-                    return true;
-                default:
-                    throw new ArgumentException($"Index is out of range: {index}");
-            }
-        }
-
-        public static object GetNthObject(
-            ushort index,
-            ISettingsGetter obj)
-        {
-            Settings_FieldIndex enu = (Settings_FieldIndex)index;
-            switch (enu)
-            {
-                case Settings_FieldIndex.Mappings:
-                    return obj.Mappings;
-                case Settings_FieldIndex.LastReferencedDirectory:
-                    return obj.LastReferencedDirectory;
-                default:
-                    throw new ArgumentException($"Index is out of range: {index}");
-            }
-        }
-
-        public static void Clear(
-            ISettings item,
-            NotifyingUnsetParameters cmds = null)
+        public static void Clear(ISettings item)
         {
             item.Mappings.Unset();
             item.LastReferencedDirectory = default(String);
@@ -1119,7 +997,7 @@ namespace BethesdaGitSync.Internals
                 rhs.Mappings,
                 (loqLhs, loqRhs) => loqLhs.GetEqualsMask(loqRhs, include),
                 include);
-            ret.LastReferencedDirectory = object.Equals(item.LastReferencedDirectory, rhs.LastReferencedDirectory);
+            ret.LastReferencedDirectory = string.Equals(item.LastReferencedDirectory, rhs.LastReferencedDirectory);
         }
 
         public static string ToString(
@@ -1304,57 +1182,63 @@ namespace BethesdaGitSync.Internals
             switch (name)
             {
                 case "Mappings":
-                    try
+                    if ((translationMask?.GetShouldTranslate((int)Settings_FieldIndex.Mappings) ?? true))
                     {
-                        errorMask?.PushIndex((int)Settings_FieldIndex.Mappings);
-                        if (ListXmlTranslation<Mapping>.Instance.Parse(
-                            node: node,
-                            enumer: out var MappingsItem,
-                            transl: LoquiXmlTranslation<Mapping>.Instance.Parse,
-                            errorMask: errorMask,
-                            translationMask: translationMask))
+                        try
                         {
-                            item.Mappings.SetTo(MappingsItem);
+                            errorMask?.PushIndex((int)Settings_FieldIndex.Mappings);
+                            if (ListXmlTranslation<Mapping>.Instance.Parse(
+                                node: node,
+                                enumer: out var MappingsItem,
+                                transl: LoquiXmlTranslation<Mapping>.Instance.Parse,
+                                errorMask: errorMask,
+                                translationMask: translationMask))
+                            {
+                                item.Mappings.SetTo(MappingsItem);
+                            }
+                            else
+                            {
+                                item.Mappings.Unset();
+                            }
                         }
-                        else
+                        catch (Exception ex)
+                        when (errorMask != null)
                         {
-                            item.Mappings.Unset();
+                            errorMask.ReportException(ex);
                         }
-                    }
-                    catch (Exception ex)
-                    when (errorMask != null)
-                    {
-                        errorMask.ReportException(ex);
-                    }
-                    finally
-                    {
-                        errorMask?.PopIndex();
+                        finally
+                        {
+                            errorMask?.PopIndex();
+                        }
                     }
                     break;
                 case "LastReferencedDirectory":
-                    try
+                    if ((translationMask?.GetShouldTranslate((int)Settings_FieldIndex.LastReferencedDirectory) ?? true))
                     {
-                        errorMask?.PushIndex((int)Settings_FieldIndex.LastReferencedDirectory);
-                        if (StringXmlTranslation.Instance.Parse(
-                            node: node,
-                            item: out String LastReferencedDirectoryParse,
-                            errorMask: errorMask))
+                        try
                         {
-                            item.LastReferencedDirectory = LastReferencedDirectoryParse;
+                            errorMask?.PushIndex((int)Settings_FieldIndex.LastReferencedDirectory);
+                            if (StringXmlTranslation.Instance.Parse(
+                                node: node,
+                                item: out String LastReferencedDirectoryParse,
+                                errorMask: errorMask))
+                            {
+                                item.LastReferencedDirectory = LastReferencedDirectoryParse;
+                            }
+                            else
+                            {
+                                item.LastReferencedDirectory = default(String);
+                            }
                         }
-                        else
+                        catch (Exception ex)
+                        when (errorMask != null)
                         {
-                            item.LastReferencedDirectory = default(String);
+                            errorMask.ReportException(ex);
                         }
-                    }
-                    catch (Exception ex)
-                    when (errorMask != null)
-                    {
-                        errorMask.ReportException(ex);
-                    }
-                    finally
-                    {
-                        errorMask?.PopIndex();
+                        finally
+                        {
+                            errorMask?.PopIndex();
+                        }
                     }
                     break;
                 default:

@@ -91,7 +91,7 @@
                 <Setter Property="FontFamily" Value="{DynamicResource DefaultFont}" />
                 <Setter Property="FontSize" Value="{DynamicResource UpperCaseContentFontSize}" />
                 <Setter Property="FontWeight" Value="Bold" />
-                <Setter Property="Foreground" Value="#AAAAAA" />
+                <Setter Property="Foreground" Value="#CCCCCC" />
                 <Setter Property="MinHeight" Value="25" />
                 <Setter Property="Padding" Value="5,6" />
                 <Setter Property="SnapsToDevicePixels" Value="True" />
@@ -148,6 +148,8 @@
             </Style>
 
             <Style BasedOn="{StaticResource MainButtonStyle}" TargetType="{x:Type Button}" />
+
+            <SolidColorBrush x:Key="SeparationLineBrush" Color="#09FFFFFF" />
 
             <Style BasedOn="{StaticResource MetroListBoxItem}" TargetType="ListBoxItem">
                 <Setter Property="Padding" Value="0" />

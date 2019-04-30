@@ -22,6 +22,9 @@ namespace BethesdaGitSync
         private bool _NewEntry;
         public bool NewEntry { get => _NewEntry; set => this.RaiseAndSetIfChanged(ref _NewEntry, value); }
 
+        private readonly ObservableAsPropertyHelper<string> _SettingsTitle;
+        public string SettingsTitle => _SettingsTitle.Value;
+
         public ICommand DiscardCommand { get; }
 
         public ICommand AcceptCommand { get; }
@@ -95,6 +98,19 @@ namespace BethesdaGitSync
                         }
                     }
                 });
+            this._SettingsTitle = this.WhenAny(x => x.NewEntry)
+                .Select(newEntry =>
+                {
+                    if (newEntry)
+                    {
+                        return "Create New Mapping";
+                    }
+                    else
+                    {
+                        return "Modify Mapping Settings";
+                    }
+                })
+                .ToProperty(this, nameof(SettingsTitle));
         }
 
         public void Target(MappingVM mapping, bool newItem)

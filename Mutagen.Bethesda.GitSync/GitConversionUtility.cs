@@ -105,6 +105,7 @@ namespace Mutagen.Bethesda.GitSync
                     && xmlFolderTargetPath.Exists)
                 {
                     var backupTarget = new DirectoryPath(Path.Combine(backupFolder.Value.Path, DateTime.Now.ToString("MM-dd-yyyy HH-mm-ss")));
+                    backupTarget.Directory.Create();
                     Directory.Move(xmlFolderTargetPath.Path, backupTarget.Path);
                     CleanBackups(backupFolder.Value.Path, numBackups);
                 }
