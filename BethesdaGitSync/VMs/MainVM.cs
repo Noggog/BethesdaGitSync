@@ -1,4 +1,4 @@
-﻿using DynamicData;
+using DynamicData;
 using DynamicData.Binding;
 using ReactiveUI;
 using System;
@@ -81,17 +81,23 @@ namespace BethesdaGitSync
                 {
                     var toSync = this.SelectedGroup?.SelectedMappings.ToArray();
                     if (toSync == null) return;
-                    foreach (var item in toSync)
+                    await Task.Run(async () =>
                     {
-                        try
+                        await Task.WhenAll(toSync.Select(item =>
                         {
+                            return Task.Run(async () =>
+                            {
+                                try
+                                {
                             await item.SyncToGit();
-                        }
-                        catch (Exception ex)
-                        {
-                            item.LastFolderError = ex.Message;
-                        }
-                    }
+                                }
+                                catch (Exception ex)
+                                {
+                                    item.LastBinaryError = ex.Message;
+                                }
+                            });
+                        }));
+                    });
                 },
                 canExecute: this.WhenAny(x => x.SelectedGroup.SelectedMappings.CountChanged)
                     .Switch()
@@ -102,17 +108,23 @@ namespace BethesdaGitSync
                 {
                     var toSync = this.SelectedGroup?.SelectedMappings.ToArray();
                     if (toSync == null) return;
-                    foreach (var item in toSync)
+                    await Task.Run(async () =>
                     {
-                        try
+                        await Task.WhenAll(toSync.Select(item =>
                         {
+                            return Task.Run(async () =>
+                            {
+                                try
+                                {
                             await item.SyncToBinary();
                         }
                         catch (Exception ex)
-                        {
-                            item.LastBinaryError = ex.Message;
-                        }
-                    }
+                                {
+                                    item.LastBinaryError = ex.Message;
+                                }
+                            });
+                        }));
+                    });
                 },
                 canExecute: this.WhenAny(x => x.SelectedGroup.SelectedMappings.CountChanged)
                     .Switch()
