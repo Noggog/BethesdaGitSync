@@ -19,8 +19,8 @@ namespace Mutagen.Bethesda.GitSync
     {
         public static GitConversionInstructions<OblivionMod> Oblivion(ModKey modKey) => new GitConversionInstructions<OblivionMod>()
         {
-            CreateBinary = async (f) => OblivionMod.Create_Binary(f.Path, modKey),
-            CreateXmlFolder = async (f) => await OblivionMod.Create_Xml_Folder(f.Path, modKey),
+            CreateBinary = (f) => OblivionMod.Create_Binary(f.Path, modKey),
+            CreateXmlFolder = (f) => OblivionMod.Create_Xml_Folder(f.Path, modKey),
             WriteBinary = async (m, f) => m.Write_Binary(f.Path, modKey),
             WriteXmlFolder = async (m, f) => await m.Write_XmlFolder(f.Path)
         };
