@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="us-ascii"?>
+<xs:schema id="Grouping" targetNamespace="BethesdaGitSync" elementFormDefault="qualified" xmlns="BethesdaGitSync" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+   <xs:include schemaLocation="Mapping.xsd" />
+   <xs:include schemaLocation="..\Common.xsd" />
+   <xs:element name="Grouping" type="GroupingType" />
+   <xs:complexType name="GroupingType">
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+         <xs:element name="Nickname" type="NullableValueType" minOccurs="0" maxOccurs="1" />
+         <xs:element name="Mappings" type="MappingsType" minOccurs="0" maxOccurs="1" />
+      </xs:choice>
+   </xs:complexType>
+   <xs:complexType name="MappingsType">
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+         <xs:element name="Item" type="MappingType" />
+      </xs:choice>
+   </xs:complexType>
+</xs:schema>

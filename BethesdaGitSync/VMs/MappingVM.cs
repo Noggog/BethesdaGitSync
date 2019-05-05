@@ -51,14 +51,14 @@ namespace BethesdaGitSync
         private bool _IsSelected;
         public bool IsSelected { get => _IsSelected; set => this.RaiseAndSetIfChanged(ref _IsSelected, value); }
 
-        public MappingVM(MainVM mainVM, Mapping mapping)
+        public MappingVM(Mapping mapping)
         {
             this.Mapping = mapping;
 
             this.OpenSettingsCommand = ReactiveCommand.Create(
                 execute: () =>
                 {
-                    mainVM.MappingEditorVM.Target(
+                    MainVM.Instance.MappingEditorVM.Target(
                         this,
                         newItem: false);
                 });

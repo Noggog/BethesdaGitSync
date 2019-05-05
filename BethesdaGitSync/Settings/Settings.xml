@@ -2,7 +2,7 @@
 <Loqui xmlns="http://tempuri.org/LoquiSource.xsd">
   <Object name="Settings" GUID="8769086b-f201-4c59-8d96-1756a9401af5" ID="1">
     <Fields>
-      <RefList name="Mappings" refName="Mapping" />
+      <RefList name="Groupings" refName="Grouping" />
       <String name="LastReferencedDirectory" />
     </Fields>
   </Object>
@@ -11,6 +11,12 @@
       <String name="Nickname" />
       <FilePath name="BinaryPath" />
       <DirectoryPath name="FolderPath" />
+    </Fields>
+  </Object>
+  <Object name="Grouping" GUID="2279225e-dc13-49bb-9308-840e9e53bdb6" ID="3">
+    <Fields>
+      <String name="Nickname" />
+      <RefList name="Mappings" refName="Mapping" />
     </Fields>
   </Object>
 </Loqui>

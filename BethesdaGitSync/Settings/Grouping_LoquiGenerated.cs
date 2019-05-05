@@ -27,19 +27,19 @@ using System.Collections.Specialized;
 namespace BethesdaGitSync
 {
     #region Class
-    public partial class Settings : 
+    public partial class Grouping : 
         LoquiNotifyingObject,
-        ISettings,
-        ILoquiObject<Settings>,
+        IGrouping,
+        ILoquiObject<Grouping>,
         ILoquiObjectSetter,
-        IEquatable<Settings>
+        IEquatable<Grouping>
     {
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        ILoquiRegistration ILoquiObject.Registration => Settings_Registration.Instance;
-        public static Settings_Registration Registration => Settings_Registration.Instance;
+        ILoquiRegistration ILoquiObject.Registration => Grouping_Registration.Instance;
+        public static Grouping_Registration Registration => Grouping_Registration.Instance;
 
         #region Ctor
-        public Settings()
+        public Grouping()
         {
             _hasBeenSetTracker = new BitArray(((ILoquiObject)this).Registration.FieldCount);
             CustomCtor();
@@ -47,77 +47,77 @@ namespace BethesdaGitSync
         partial void CustomCtor();
         #endregion
 
-        #region Groupings
-        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        private readonly SourceSetList<Grouping> _Groupings = new SourceSetList<Grouping>();
-        public ISourceSetList<Grouping> Groupings => _Groupings;
-        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        public IEnumerable<Grouping> GroupingsEnumerable
+        #region Nickname
+        private String _Nickname;
+        public String Nickname
         {
-            get => _Groupings.Items;
-            set => _Groupings.SetTo(value);
+            get => this._Nickname;
+            set => this.RaiseAndSetIfReferenceChanged(ref this._Nickname, value, nameof(Nickname));
+        }
+        #endregion
+        #region Mappings
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+        private readonly SourceSetList<Mapping> _Mappings = new SourceSetList<Mapping>();
+        public ISourceSetList<Mapping> Mappings => _Mappings;
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+        public IEnumerable<Mapping> MappingsEnumerable
+        {
+            get => _Mappings.Items;
+            set => _Mappings.SetTo(value);
         }
         #region Interface Members
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        ISourceSetList<Grouping> ISettings.Groupings => _Groupings;
+        ISourceSetList<Mapping> IGrouping.Mappings => _Mappings;
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        IObservableSetList<Grouping> ISettingsGetter.Groupings => _Groupings;
+        IObservableSetList<Mapping> IGroupingGetter.Mappings => _Mappings;
         #endregion
 
         #endregion
-        #region LastReferencedDirectory
-        private String _LastReferencedDirectory;
-        public String LastReferencedDirectory
-        {
-            get => this._LastReferencedDirectory;
-            set => this.RaiseAndSetIfReferenceChanged(ref this._LastReferencedDirectory, value, nameof(LastReferencedDirectory));
-        }
-        #endregion
 
-        IMask<bool> IEqualsMask<Settings>.GetEqualsMask(Settings rhs, EqualsMaskHelper.Include include) => SettingsCommon.GetEqualsMask(this, rhs, include);
-        IMask<bool> IEqualsMask<ISettingsGetter>.GetEqualsMask(ISettingsGetter rhs, EqualsMaskHelper.Include include) => SettingsCommon.GetEqualsMask(this, rhs, include);
+        IMask<bool> IEqualsMask<Grouping>.GetEqualsMask(Grouping rhs, EqualsMaskHelper.Include include) => GroupingCommon.GetEqualsMask(this, rhs, include);
+        IMask<bool> IEqualsMask<IGroupingGetter>.GetEqualsMask(IGroupingGetter rhs, EqualsMaskHelper.Include include) => GroupingCommon.GetEqualsMask(this, rhs, include);
         #region To String
         public string ToString(
             string name = null,
-            Settings_Mask<bool> printMask = null)
+            Grouping_Mask<bool> printMask = null)
         {
-            return SettingsCommon.ToString(this, name: name, printMask: printMask);
+            return GroupingCommon.ToString(this, name: name, printMask: printMask);
         }
 
         public void ToString(
             FileGeneration fg,
             string name = null)
         {
-            SettingsCommon.ToString(this, fg, name: name, printMask: null);
+            GroupingCommon.ToString(this, fg, name: name, printMask: null);
         }
 
         #endregion
 
         IMask<bool> ILoquiObjectGetter.GetHasBeenSetMask() => this.GetHasBeenSetMask();
-        public Settings_Mask<bool> GetHasBeenSetMask()
+        public Grouping_Mask<bool> GetHasBeenSetMask()
         {
-            return SettingsCommon.GetHasBeenSetMask(this);
+            return GroupingCommon.GetHasBeenSetMask(this);
         }
         #region Equals and Hash
         public override bool Equals(object obj)
         {
-            if (!(obj is Settings rhs)) return false;
+            if (!(obj is Grouping rhs)) return false;
             return Equals(rhs);
         }
 
-        public bool Equals(Settings rhs)
+        public bool Equals(Grouping rhs)
         {
             if (rhs == null) return false;
-            if (!this.Groupings.SequenceEqual(rhs.Groupings)) return false;
-            if (!string.Equals(this.LastReferencedDirectory, rhs.LastReferencedDirectory)) return false;
+            if (!string.Equals(this.Nickname, rhs.Nickname)) return false;
+            if (!this.Mappings.SequenceEqual(rhs.Mappings)) return false;
             return true;
         }
 
         public override int GetHashCode()
         {
             int ret = 0;
-            ret = HashHelper.GetHashCode(Groupings).CombineHashCode(ret);
-            ret = HashHelper.GetHashCode(LastReferencedDirectory).CombineHashCode(ret);
+            ret = HashHelper.GetHashCode(Nickname).CombineHashCode(ret);
+            ret = HashHelper.GetHashCode(Mappings).CombineHashCode(ret);
             return ret;
         }
 
@@ -127,10 +127,10 @@ namespace BethesdaGitSync
         #region Xml Translation
         #region Xml Create
         [DebuggerStepThrough]
-        public static Settings Create_Xml(
+        public static Grouping Create_Xml(
             XElement node,
             MissingCreate missing = MissingCreate.New,
-            Settings_TranslationMask translationMask = null)
+            Grouping_TranslationMask translationMask = null)
         {
             return Create_Xml(
                 missing: missing,
@@ -140,11 +140,11 @@ namespace BethesdaGitSync
         }
 
         [DebuggerStepThrough]
-        public static Settings Create_Xml(
+        public static Grouping Create_Xml(
             XElement node,
-            out Settings_ErrorMask errorMask,
+            out Grouping_ErrorMask errorMask,
             bool doMasks = true,
-            Settings_TranslationMask translationMask = null,
+            Grouping_TranslationMask translationMask = null,
             MissingCreate missing = MissingCreate.New)
         {
             ErrorMaskBuilder errorMaskBuilder = doMasks ? new ErrorMaskBuilder() : null;
@@ -153,11 +153,11 @@ namespace BethesdaGitSync
                 node: node,
                 errorMask: errorMaskBuilder,
                 translationMask: translationMask.GetCrystal());
-            errorMask = Settings_ErrorMask.Factory(errorMaskBuilder);
+            errorMask = Grouping_ErrorMask.Factory(errorMaskBuilder);
             return ret;
         }
 
-        public static Settings Create_Xml(
+        public static Grouping Create_Xml(
             XElement node,
             ErrorMaskBuilder errorMask,
             TranslationCrystal translationMask,
@@ -167,17 +167,17 @@ namespace BethesdaGitSync
             {
                 case MissingCreate.New:
                 case MissingCreate.Null:
-                    if (node == null) return missing == MissingCreate.New ? new Settings() : null;
+                    if (node == null) return missing == MissingCreate.New ? new Grouping() : null;
                     break;
                 default:
                     break;
             }
-            var ret = new Settings();
+            var ret = new Grouping();
             try
             {
                 foreach (var elem in node.Elements())
                 {
-                    SettingsCommon.FillPublicElement_Xml(
+                    GroupingCommon.FillPublicElement_Xml(
                         item: ret,
                         node: elem,
                         name: elem.Name.LocalName,
@@ -193,10 +193,10 @@ namespace BethesdaGitSync
             return ret;
         }
 
-        public static Settings Create_Xml(
+        public static Grouping Create_Xml(
             string path,
             MissingCreate missing = MissingCreate.New,
-            Settings_TranslationMask translationMask = null)
+            Grouping_TranslationMask translationMask = null)
         {
             var node = System.IO.File.Exists(path) ? XDocument.Load(path).Root : null;
             return Create_Xml(
@@ -205,10 +205,10 @@ namespace BethesdaGitSync
                 translationMask: translationMask);
         }
 
-        public static Settings Create_Xml(
+        public static Grouping Create_Xml(
             string path,
-            out Settings_ErrorMask errorMask,
-            Settings_TranslationMask translationMask = null,
+            out Grouping_ErrorMask errorMask,
+            Grouping_TranslationMask translationMask = null,
             MissingCreate missing = MissingCreate.New)
         {
             var node = System.IO.File.Exists(path) ? XDocument.Load(path).Root : null;
@@ -219,10 +219,10 @@ namespace BethesdaGitSync
                 translationMask: translationMask);
         }
 
-        public static Settings Create_Xml(
+        public static Grouping Create_Xml(
             string path,
             ErrorMaskBuilder errorMask,
-            Settings_TranslationMask translationMask = null,
+            Grouping_TranslationMask translationMask = null,
             MissingCreate missing = MissingCreate.New)
         {
             var node = System.IO.File.Exists(path) ? XDocument.Load(path).Root : null;
@@ -233,10 +233,10 @@ namespace BethesdaGitSync
                 translationMask: translationMask?.GetCrystal());
         }
 
-        public static Settings Create_Xml(
+        public static Grouping Create_Xml(
             Stream stream,
             MissingCreate missing = MissingCreate.New,
-            Settings_TranslationMask translationMask = null)
+            Grouping_TranslationMask translationMask = null)
         {
             var node = XDocument.Load(stream).Root;
             return Create_Xml(
@@ -245,10 +245,10 @@ namespace BethesdaGitSync
                 translationMask: translationMask);
         }
 
-        public static Settings Create_Xml(
+        public static Grouping Create_Xml(
             Stream stream,
-            out Settings_ErrorMask errorMask,
-            Settings_TranslationMask translationMask = null,
+            out Grouping_ErrorMask errorMask,
+            Grouping_TranslationMask translationMask = null,
             MissingCreate missing = MissingCreate.New)
         {
             var node = XDocument.Load(stream).Root;
@@ -259,10 +259,10 @@ namespace BethesdaGitSync
                 translationMask: translationMask);
         }
 
-        public static Settings Create_Xml(
+        public static Grouping Create_Xml(
             Stream stream,
             ErrorMaskBuilder errorMask,
-            Settings_TranslationMask translationMask = null,
+            Grouping_TranslationMask translationMask = null,
             MissingCreate missing = MissingCreate.New)
         {
             var node = XDocument.Load(stream).Root;
@@ -289,8 +289,8 @@ namespace BethesdaGitSync
 
         public virtual void CopyIn_Xml(
             XElement node,
-            out Settings_ErrorMask errorMask,
-            Settings_TranslationMask translationMask = null,
+            out Grouping_ErrorMask errorMask,
+            Grouping_TranslationMask translationMask = null,
             MissingCreate missing = MissingCreate.New,
             bool doMasks = true)
         {
@@ -300,7 +300,7 @@ namespace BethesdaGitSync
                 node: node,
                 errorMask: errorMaskBuilder,
                 translationMask: translationMask?.GetCrystal());
-            errorMask = Settings_ErrorMask.Factory(errorMaskBuilder);
+            errorMask = Grouping_ErrorMask.Factory(errorMaskBuilder);
         }
 
         protected void CopyIn_Xml_Internal(
@@ -309,7 +309,7 @@ namespace BethesdaGitSync
             TranslationCrystal translationMask,
             MissingCreate missing = MissingCreate.New)
         {
-            LoquiXmlTranslation<Settings>.Instance.CopyIn(
+            LoquiXmlTranslation<Grouping>.Instance.CopyIn(
                 missing: missing,
                 node: node,
                 item: this,
@@ -330,8 +330,8 @@ namespace BethesdaGitSync
 
         public void CopyIn_Xml(
             string path,
-            out Settings_ErrorMask errorMask,
-            Settings_TranslationMask translationMask,
+            out Grouping_ErrorMask errorMask,
+            Grouping_TranslationMask translationMask,
             MissingCreate missing = MissingCreate.New,
             bool doMasks = true)
         {
@@ -356,8 +356,8 @@ namespace BethesdaGitSync
 
         public void CopyIn_Xml(
             Stream stream,
-            out Settings_ErrorMask errorMask,
-            Settings_TranslationMask translationMask,
+            out Grouping_ErrorMask errorMask,
+            Grouping_TranslationMask translationMask,
             MissingCreate missing = MissingCreate.New,
             bool doMasks = true)
         {
@@ -375,9 +375,9 @@ namespace BethesdaGitSync
         #region Xml Write
         public virtual void Write_Xml(
             XElement node,
-            out Settings_ErrorMask errorMask,
+            out Grouping_ErrorMask errorMask,
             bool doMasks = true,
-            Settings_TranslationMask translationMask = null,
+            Grouping_TranslationMask translationMask = null,
             string name = null)
         {
             ErrorMaskBuilder errorMaskBuilder = doMasks ? new ErrorMaskBuilder() : null;
@@ -386,13 +386,13 @@ namespace BethesdaGitSync
                 node: node,
                 errorMask: errorMaskBuilder,
                 translationMask: translationMask?.GetCrystal());
-            errorMask = Settings_ErrorMask.Factory(errorMaskBuilder);
+            errorMask = Grouping_ErrorMask.Factory(errorMaskBuilder);
         }
 
         public virtual void Write_Xml(
             string path,
-            out Settings_ErrorMask errorMask,
-            Settings_TranslationMask translationMask = null,
+            out Grouping_ErrorMask errorMask,
+            Grouping_TranslationMask translationMask = null,
             bool doMasks = true,
             string name = null)
         {
@@ -422,8 +422,8 @@ namespace BethesdaGitSync
         }
         public virtual void Write_Xml(
             Stream stream,
-            out Settings_ErrorMask errorMask,
-            Settings_TranslationMask translationMask = null,
+            out Grouping_ErrorMask errorMask,
+            Grouping_TranslationMask translationMask = null,
             bool doMasks = true,
             string name = null)
         {
@@ -454,7 +454,7 @@ namespace BethesdaGitSync
         public void Write_Xml(
             XElement node,
             string name = null,
-            Settings_TranslationMask translationMask = null)
+            Grouping_TranslationMask translationMask = null)
         {
             this.Write_Xml(
                 name: name,
@@ -495,7 +495,7 @@ namespace BethesdaGitSync
             TranslationCrystal translationMask,
             string name = null)
         {
-            SettingsCommon.Write_Xml(
+            GroupingCommon.Write_Xml(
                 item: this,
                 name: name,
                 node: node,
@@ -509,39 +509,39 @@ namespace BethesdaGitSync
         protected readonly BitArray _hasBeenSetTracker;
         protected bool GetHasBeenSet(int index)
         {
-            switch ((Settings_FieldIndex)index)
+            switch ((Grouping_FieldIndex)index)
             {
-                case Settings_FieldIndex.Groupings:
-                case Settings_FieldIndex.LastReferencedDirectory:
+                case Grouping_FieldIndex.Nickname:
+                case Grouping_FieldIndex.Mappings:
                     return true;
                 default:
                     throw new ArgumentException($"Unknown field index: {index}");
             }
         }
 
-        public Settings Copy(
-            Settings_CopyMask copyMask = null,
-            ISettingsGetter def = null)
+        public Grouping Copy(
+            Grouping_CopyMask copyMask = null,
+            IGroupingGetter def = null)
         {
-            return Settings.Copy(
+            return Grouping.Copy(
                 this,
                 copyMask: copyMask,
                 def: def);
         }
 
-        public static Settings Copy(
-            ISettings item,
-            Settings_CopyMask copyMask = null,
-            ISettingsGetter def = null)
+        public static Grouping Copy(
+            IGrouping item,
+            Grouping_CopyMask copyMask = null,
+            IGroupingGetter def = null)
         {
-            Settings ret;
-            if (item.GetType().Equals(typeof(Settings)))
+            Grouping ret;
+            if (item.GetType().Equals(typeof(Grouping)))
             {
-                ret = new Settings();
+                ret = new Grouping();
             }
             else
             {
-                ret = (Settings)System.Activator.CreateInstance(item.GetType());
+                ret = (Grouping)System.Activator.CreateInstance(item.GetType());
             }
             ret.CopyFieldsFrom(
                 item,
@@ -550,19 +550,19 @@ namespace BethesdaGitSync
             return ret;
         }
 
-        public static Settings Copy_ToLoqui(
-            ISettingsGetter item,
-            Settings_CopyMask copyMask = null,
-            ISettingsGetter def = null)
+        public static Grouping Copy_ToLoqui(
+            IGroupingGetter item,
+            Grouping_CopyMask copyMask = null,
+            IGroupingGetter def = null)
         {
-            Settings ret;
-            if (item.GetType().Equals(typeof(Settings)))
+            Grouping ret;
+            if (item.GetType().Equals(typeof(Grouping)))
             {
-                ret = new Settings() as Settings;
+                ret = new Grouping() as Grouping;
             }
             else
             {
-                ret = (Settings)System.Activator.CreateInstance(item.GetType());
+                ret = (Grouping)System.Activator.CreateInstance(item.GetType());
             }
             ret.CopyFieldsFrom(
                 item,
@@ -571,10 +571,10 @@ namespace BethesdaGitSync
             return ret;
         }
 
-        public void CopyFieldsFrom(ISettingsGetter rhs)
+        public void CopyFieldsFrom(IGroupingGetter rhs)
         {
             this.CopyFieldsFrom(
-                rhs: (ISettingsGetter)rhs,
+                rhs: (IGroupingGetter)rhs,
                 def: null,
                 doMasks: false,
                 errorMask: out var errMask,
@@ -582,9 +582,9 @@ namespace BethesdaGitSync
         }
 
         public void CopyFieldsFrom(
-            ISettingsGetter rhs,
-            Settings_CopyMask copyMask,
-            ISettingsGetter def = null)
+            IGroupingGetter rhs,
+            Grouping_CopyMask copyMask,
+            IGroupingGetter def = null)
         {
             this.CopyFieldsFrom(
                 rhs: rhs,
@@ -595,30 +595,30 @@ namespace BethesdaGitSync
         }
 
         public void CopyFieldsFrom(
-            ISettingsGetter rhs,
-            out Settings_ErrorMask errorMask,
-            Settings_CopyMask copyMask = null,
-            ISettingsGetter def = null,
+            IGroupingGetter rhs,
+            out Grouping_ErrorMask errorMask,
+            Grouping_CopyMask copyMask = null,
+            IGroupingGetter def = null,
             bool doMasks = true)
         {
             var errorMaskBuilder = new ErrorMaskBuilder();
-            SettingsCommon.CopyFieldsFrom(
+            GroupingCommon.CopyFieldsFrom(
                 item: this,
                 rhs: rhs,
                 def: def,
                 errorMask: errorMaskBuilder,
                 copyMask: copyMask);
-            errorMask = Settings_ErrorMask.Factory(errorMaskBuilder);
+            errorMask = Grouping_ErrorMask.Factory(errorMaskBuilder);
         }
 
         public void CopyFieldsFrom(
-            ISettingsGetter rhs,
+            IGroupingGetter rhs,
             ErrorMaskBuilder errorMask,
-            Settings_CopyMask copyMask = null,
-            ISettingsGetter def = null,
+            Grouping_CopyMask copyMask = null,
+            IGroupingGetter def = null,
             bool doMasks = true)
         {
-            SettingsCommon.CopyFieldsFrom(
+            GroupingCommon.CopyFieldsFrom(
                 item: this,
                 rhs: rhs,
                 def: def,
@@ -628,14 +628,14 @@ namespace BethesdaGitSync
 
         protected void SetNthObject(ushort index, object obj)
         {
-            Settings_FieldIndex enu = (Settings_FieldIndex)index;
+            Grouping_FieldIndex enu = (Grouping_FieldIndex)index;
             switch (enu)
             {
-                case Settings_FieldIndex.Groupings:
-                    this._Groupings.SetTo((IEnumerable<Grouping>)obj);
+                case Grouping_FieldIndex.Nickname:
+                    this.Nickname = (String)obj;
                     break;
-                case Settings_FieldIndex.LastReferencedDirectory:
-                    this.LastReferencedDirectory = (String)obj;
+                case Grouping_FieldIndex.Mappings:
+                    this._Mappings.SetTo((IEnumerable<Mapping>)obj);
                     break;
                 default:
                     throw new ArgumentException($"Index is out of range: {index}");
@@ -652,33 +652,33 @@ namespace BethesdaGitSync
         public void Clear()
         {
             CallClearPartial_Internal();
-            SettingsCommon.Clear(this);
+            GroupingCommon.Clear(this);
         }
 
 
-        public static Settings Create(IEnumerable<KeyValuePair<ushort, object>> fields)
+        public static Grouping Create(IEnumerable<KeyValuePair<ushort, object>> fields)
         {
-            var ret = new Settings();
+            var ret = new Grouping();
             foreach (var pair in fields)
             {
-                CopyInInternal_Settings(ret, pair);
+                CopyInInternal_Grouping(ret, pair);
             }
             return ret;
         }
 
-        protected static void CopyInInternal_Settings(Settings obj, KeyValuePair<ushort, object> pair)
+        protected static void CopyInInternal_Grouping(Grouping obj, KeyValuePair<ushort, object> pair)
         {
-            if (!EnumExt.TryParse(pair.Key, out Settings_FieldIndex enu))
+            if (!EnumExt.TryParse(pair.Key, out Grouping_FieldIndex enu))
             {
                 throw new ArgumentException($"Unknown index: {pair.Key}");
             }
             switch (enu)
             {
-                case Settings_FieldIndex.Groupings:
-                    obj._Groupings.SetTo((IEnumerable<Grouping>)pair.Value);
+                case Grouping_FieldIndex.Nickname:
+                    obj.Nickname = (String)pair.Value;
                     break;
-                case Settings_FieldIndex.LastReferencedDirectory:
-                    obj.LastReferencedDirectory = (String)pair.Value;
+                case Grouping_FieldIndex.Mappings:
+                    obj._Mappings.SetTo((IEnumerable<Mapping>)pair.Value);
                     break;
                 default:
                     throw new ArgumentException($"Unknown enum type: {enu}");
@@ -688,21 +688,21 @@ namespace BethesdaGitSync
     #endregion
 
     #region Interface
-    public partial interface ISettings : ISettingsGetter, ILoquiClass<ISettings, ISettingsGetter>, ILoquiClass<Settings, ISettingsGetter>
+    public partial interface IGrouping : IGroupingGetter, ILoquiClass<IGrouping, IGroupingGetter>, ILoquiClass<Grouping, IGroupingGetter>
     {
-        new ISourceSetList<Grouping> Groupings { get; }
-        new String LastReferencedDirectory { get; set; }
+        new String Nickname { get; set; }
 
+        new ISourceSetList<Mapping> Mappings { get; }
     }
 
-    public partial interface ISettingsGetter : ILoquiObject
+    public partial interface IGroupingGetter : ILoquiObject
     {
-        #region Groupings
-        IObservableSetList<Grouping> Groupings { get; }
-        #endregion
-        #region LastReferencedDirectory
-        String LastReferencedDirectory { get; }
+        #region Nickname
+        String Nickname { get; }
 
+        #endregion
+        #region Mappings
+        IObservableSetList<Mapping> Mappings { get; }
         #endregion
 
     }
@@ -714,46 +714,46 @@ namespace BethesdaGitSync
 namespace BethesdaGitSync.Internals
 {
     #region Field Index
-    public enum Settings_FieldIndex
+    public enum Grouping_FieldIndex
     {
-        Groupings = 0,
-        LastReferencedDirectory = 1,
+        Nickname = 0,
+        Mappings = 1,
     }
     #endregion
 
     #region Registration
-    public class Settings_Registration : ILoquiRegistration
+    public class Grouping_Registration : ILoquiRegistration
     {
-        public static readonly Settings_Registration Instance = new Settings_Registration();
+        public static readonly Grouping_Registration Instance = new Grouping_Registration();
 
         public static ProtocolKey ProtocolKey => ProtocolDefinition_BethesdaGitSync.ProtocolKey;
 
         public static readonly ObjectKey ObjectKey = new ObjectKey(
             protocolKey: ProtocolDefinition_BethesdaGitSync.ProtocolKey,
-            msgID: 1,
+            msgID: 3,
             version: 0);
 
-        public const string GUID = "8769086b-f201-4c59-8d96-1756a9401af5";
+        public const string GUID = "2279225e-dc13-49bb-9308-840e9e53bdb6";
 
         public const ushort AdditionalFieldCount = 2;
 
         public const ushort FieldCount = 2;
 
-        public static readonly Type MaskType = typeof(Settings_Mask<>);
+        public static readonly Type MaskType = typeof(Grouping_Mask<>);
 
-        public static readonly Type ErrorMaskType = typeof(Settings_ErrorMask);
+        public static readonly Type ErrorMaskType = typeof(Grouping_ErrorMask);
 
-        public static readonly Type ClassType = typeof(Settings);
+        public static readonly Type ClassType = typeof(Grouping);
 
-        public static readonly Type GetterType = typeof(ISettingsGetter);
+        public static readonly Type GetterType = typeof(IGroupingGetter);
 
-        public static readonly Type SetterType = typeof(ISettings);
+        public static readonly Type SetterType = typeof(IGrouping);
 
-        public static readonly Type CommonType = typeof(SettingsCommon);
+        public static readonly Type CommonType = typeof(GroupingCommon);
 
-        public const string FullName = "BethesdaGitSync.Settings";
+        public const string FullName = "BethesdaGitSync.Grouping";
 
-        public const string Name = "Settings";
+        public const string Name = "Grouping";
 
         public const string Namespace = "BethesdaGitSync";
 
@@ -765,10 +765,10 @@ namespace BethesdaGitSync.Internals
         {
             switch (str.Upper)
             {
-                case "GROUPINGS":
-                    return (ushort)Settings_FieldIndex.Groupings;
-                case "LASTREFERENCEDDIRECTORY":
-                    return (ushort)Settings_FieldIndex.LastReferencedDirectory;
+                case "NICKNAME":
+                    return (ushort)Grouping_FieldIndex.Nickname;
+                case "MAPPINGS":
+                    return (ushort)Grouping_FieldIndex.Mappings;
                 default:
                     return null;
             }
@@ -776,12 +776,12 @@ namespace BethesdaGitSync.Internals
 
         public static bool GetNthIsEnumerable(ushort index)
         {
-            Settings_FieldIndex enu = (Settings_FieldIndex)index;
+            Grouping_FieldIndex enu = (Grouping_FieldIndex)index;
             switch (enu)
             {
-                case Settings_FieldIndex.Groupings:
+                case Grouping_FieldIndex.Mappings:
                     return true;
-                case Settings_FieldIndex.LastReferencedDirectory:
+                case Grouping_FieldIndex.Nickname:
                     return false;
                 default:
                     throw new ArgumentException($"Index is out of range: {index}");
@@ -790,12 +790,12 @@ namespace BethesdaGitSync.Internals
 
         public static bool GetNthIsLoqui(ushort index)
         {
-            Settings_FieldIndex enu = (Settings_FieldIndex)index;
+            Grouping_FieldIndex enu = (Grouping_FieldIndex)index;
             switch (enu)
             {
-                case Settings_FieldIndex.Groupings:
+                case Grouping_FieldIndex.Mappings:
                     return true;
-                case Settings_FieldIndex.LastReferencedDirectory:
+                case Grouping_FieldIndex.Nickname:
                     return false;
                 default:
                     throw new ArgumentException($"Index is out of range: {index}");
@@ -804,11 +804,11 @@ namespace BethesdaGitSync.Internals
 
         public static bool GetNthIsSingleton(ushort index)
         {
-            Settings_FieldIndex enu = (Settings_FieldIndex)index;
+            Grouping_FieldIndex enu = (Grouping_FieldIndex)index;
             switch (enu)
             {
-                case Settings_FieldIndex.Groupings:
-                case Settings_FieldIndex.LastReferencedDirectory:
+                case Grouping_FieldIndex.Nickname:
+                case Grouping_FieldIndex.Mappings:
                     return false;
                 default:
                     throw new ArgumentException($"Index is out of range: {index}");
@@ -817,13 +817,13 @@ namespace BethesdaGitSync.Internals
 
         public static string GetNthName(ushort index)
         {
-            Settings_FieldIndex enu = (Settings_FieldIndex)index;
+            Grouping_FieldIndex enu = (Grouping_FieldIndex)index;
             switch (enu)
             {
-                case Settings_FieldIndex.Groupings:
-                    return "Groupings";
-                case Settings_FieldIndex.LastReferencedDirectory:
-                    return "LastReferencedDirectory";
+                case Grouping_FieldIndex.Nickname:
+                    return "Nickname";
+                case Grouping_FieldIndex.Mappings:
+                    return "Mappings";
                 default:
                     throw new ArgumentException($"Index is out of range: {index}");
             }
@@ -831,11 +831,11 @@ namespace BethesdaGitSync.Internals
 
         public static bool IsNthDerivative(ushort index)
         {
-            Settings_FieldIndex enu = (Settings_FieldIndex)index;
+            Grouping_FieldIndex enu = (Grouping_FieldIndex)index;
             switch (enu)
             {
-                case Settings_FieldIndex.Groupings:
-                case Settings_FieldIndex.LastReferencedDirectory:
+                case Grouping_FieldIndex.Nickname:
+                case Grouping_FieldIndex.Mappings:
                     return false;
                 default:
                     throw new ArgumentException($"Index is out of range: {index}");
@@ -844,11 +844,11 @@ namespace BethesdaGitSync.Internals
 
         public static bool IsProtected(ushort index)
         {
-            Settings_FieldIndex enu = (Settings_FieldIndex)index;
+            Grouping_FieldIndex enu = (Grouping_FieldIndex)index;
             switch (enu)
             {
-                case Settings_FieldIndex.Groupings:
-                case Settings_FieldIndex.LastReferencedDirectory:
+                case Grouping_FieldIndex.Nickname:
+                case Grouping_FieldIndex.Mappings:
                     return false;
                 default:
                     throw new ArgumentException($"Index is out of range: {index}");
@@ -857,13 +857,13 @@ namespace BethesdaGitSync.Internals
 
         public static Type GetNthType(ushort index)
         {
-            Settings_FieldIndex enu = (Settings_FieldIndex)index;
+            Grouping_FieldIndex enu = (Grouping_FieldIndex)index;
             switch (enu)
             {
-                case Settings_FieldIndex.Groupings:
-                    return typeof(SourceSetList<Grouping>);
-                case Settings_FieldIndex.LastReferencedDirectory:
+                case Grouping_FieldIndex.Nickname:
                     return typeof(String);
+                case Grouping_FieldIndex.Mappings:
+                    return typeof(SourceSetList<Mapping>);
                 default:
                     throw new ArgumentException($"Index is out of range: {index}");
             }
@@ -900,37 +900,54 @@ namespace BethesdaGitSync.Internals
     #endregion
 
     #region Extensions
-    public static partial class SettingsCommon
+    public static partial class GroupingCommon
     {
         #region Copy Fields From
         public static void CopyFieldsFrom(
-            ISettings item,
-            ISettingsGetter rhs,
-            ISettingsGetter def,
+            IGrouping item,
+            IGroupingGetter rhs,
+            IGroupingGetter def,
             ErrorMaskBuilder errorMask,
-            Settings_CopyMask copyMask)
+            Grouping_CopyMask copyMask)
         {
-            if (copyMask?.Groupings.Overall != CopyOption.Skip)
+            if (copyMask?.Nickname ?? true)
             {
-                errorMask?.PushIndex((int)Settings_FieldIndex.Groupings);
+                errorMask?.PushIndex((int)Grouping_FieldIndex.Nickname);
                 try
                 {
-                    item.Groupings.SetToWithDefault(
-                        rhs: rhs.Groupings,
-                        def: def?.Groupings,
+                    item.Nickname = rhs.Nickname;
+                }
+                catch (Exception ex)
+                when (errorMask != null)
+                {
+                    errorMask.ReportException(ex);
+                }
+                finally
+                {
+                    errorMask?.PopIndex();
+                }
+            }
+            if (copyMask?.Mappings.Overall != CopyOption.Skip)
+            {
+                errorMask?.PushIndex((int)Grouping_FieldIndex.Mappings);
+                try
+                {
+                    item.Mappings.SetToWithDefault(
+                        rhs: rhs.Mappings,
+                        def: def?.Mappings,
                         converter: (r, d) =>
                         {
-                            switch (copyMask?.Groupings.Overall ?? CopyOption.Reference)
+                            switch (copyMask?.Mappings.Overall ?? CopyOption.Reference)
                             {
                                 case CopyOption.Reference:
                                     return r;
                                 case CopyOption.MakeCopy:
-                                    return Grouping.Copy(
+                                    return Mapping.Copy(
                                         r,
-                                        copyMask?.Groupings?.Specific,
+                                        copyMask?.Mappings?.Specific,
                                         def: d);
                                 default:
-                                    throw new NotImplementedException($"Unknown CopyOption {copyMask?.Groupings.Overall}. Cannot execute copy.");
+                                    throw new NotImplementedException($"Unknown CopyOption {copyMask?.Mappings.Overall}. Cannot execute copy.");
                             }
                         }
                         );
@@ -945,39 +962,22 @@ namespace BethesdaGitSync.Internals
                     errorMask?.PopIndex();
                 }
             }
-            if (copyMask?.LastReferencedDirectory ?? true)
-            {
-                errorMask?.PushIndex((int)Settings_FieldIndex.LastReferencedDirectory);
-                try
-                {
-                    item.LastReferencedDirectory = rhs.LastReferencedDirectory;
-                }
-                catch (Exception ex)
-                when (errorMask != null)
-                {
-                    errorMask.ReportException(ex);
-                }
-                finally
-                {
-                    errorMask?.PopIndex();
-                }
-            }
         }
 
         #endregion
 
-        public static void Clear(ISettings item)
+        public static void Clear(IGrouping item)
         {
-            item.Groupings.Unset();
-            item.LastReferencedDirectory = default(String);
+            item.Nickname = default(String);
+            item.Mappings.Unset();
         }
 
-        public static Settings_Mask<bool> GetEqualsMask(
-            this ISettingsGetter item,
-            ISettingsGetter rhs,
+        public static Grouping_Mask<bool> GetEqualsMask(
+            this IGroupingGetter item,
+            IGroupingGetter rhs,
             EqualsMaskHelper.Include include = EqualsMaskHelper.Include.All)
         {
-            var ret = new Settings_Mask<bool>();
+            var ret = new Grouping_Mask<bool>();
             FillEqualsMask(
                 item: item,
                 rhs: rhs,
@@ -987,23 +987,23 @@ namespace BethesdaGitSync.Internals
         }
 
         public static void FillEqualsMask(
-            ISettingsGetter item,
-            ISettingsGetter rhs,
-            Settings_Mask<bool> ret,
+            IGroupingGetter item,
+            IGroupingGetter rhs,
+            Grouping_Mask<bool> ret,
             EqualsMaskHelper.Include include = EqualsMaskHelper.Include.All)
         {
             if (rhs == null) return;
-            ret.Groupings = item.Groupings.CollectionEqualsHelper(
-                rhs.Groupings,
+            ret.Nickname = string.Equals(item.Nickname, rhs.Nickname);
+            ret.Mappings = item.Mappings.CollectionEqualsHelper(
+                rhs.Mappings,
                 (loqLhs, loqRhs) => loqLhs.GetEqualsMask(loqRhs, include),
                 include);
-            ret.LastReferencedDirectory = string.Equals(item.LastReferencedDirectory, rhs.LastReferencedDirectory);
         }
 
         public static string ToString(
-            this ISettingsGetter item,
+            this IGroupingGetter item,
             string name = null,
-            Settings_Mask<bool> printMask = null)
+            Grouping_Mask<bool> printMask = null)
         {
             var fg = new FileGeneration();
             item.ToString(fg, name, printMask);
@@ -1011,29 +1011,33 @@ namespace BethesdaGitSync.Internals
         }
 
         public static void ToString(
-            this ISettingsGetter item,
+            this IGroupingGetter item,
             FileGeneration fg,
             string name = null,
-            Settings_Mask<bool> printMask = null)
+            Grouping_Mask<bool> printMask = null)
         {
             if (name == null)
             {
-                fg.AppendLine($"{nameof(Settings)} =>");
+                fg.AppendLine($"{nameof(Grouping)} =>");
             }
             else
             {
-                fg.AppendLine($"{name} ({nameof(Settings)}) =>");
+                fg.AppendLine($"{name} ({nameof(Grouping)}) =>");
             }
             fg.AppendLine("[");
             using (new DepthWrapper(fg))
             {
-                if (printMask?.Groupings?.Overall ?? true)
+                if (printMask?.Nickname ?? true)
                 {
-                    fg.AppendLine("Groupings =>");
+                    fg.AppendLine($"Nickname => {item.Nickname}");
+                }
+                if (printMask?.Mappings?.Overall ?? true)
+                {
+                    fg.AppendLine("Mappings =>");
                     fg.AppendLine("[");
                     using (new DepthWrapper(fg))
                     {
-                        foreach (var subItem in item.Groupings)
+                        foreach (var subItem in item.Mappings)
                         {
                             fg.AppendLine("[");
                             using (new DepthWrapper(fg))
@@ -1045,27 +1049,23 @@ namespace BethesdaGitSync.Internals
                     }
                     fg.AppendLine("]");
                 }
-                if (printMask?.LastReferencedDirectory ?? true)
-                {
-                    fg.AppendLine($"LastReferencedDirectory => {item.LastReferencedDirectory}");
-                }
             }
             fg.AppendLine("]");
         }
 
         public static bool HasBeenSet(
-            this ISettingsGetter item,
-            Settings_Mask<bool?> checkMask)
+            this IGroupingGetter item,
+            Grouping_Mask<bool?> checkMask)
         {
-            if (checkMask.Groupings.Overall.HasValue && checkMask.Groupings.Overall.Value != item.Groupings.HasBeenSet) return false;
+            if (checkMask.Mappings.Overall.HasValue && checkMask.Mappings.Overall.Value != item.Mappings.HasBeenSet) return false;
             return true;
         }
 
-        public static Settings_Mask<bool> GetHasBeenSetMask(ISettingsGetter item)
+        public static Grouping_Mask<bool> GetHasBeenSetMask(IGroupingGetter item)
         {
-            var ret = new Settings_Mask<bool>();
-            ret.Groupings = new MaskItem<bool, IEnumerable<MaskItemIndexed<bool, Grouping_Mask<bool>>>>(item.Groupings.HasBeenSet, item.Groupings.WithIndex().Select((i) => new MaskItemIndexed<bool, Grouping_Mask<bool>>(i.Index, true, i.Item.GetHasBeenSetMask())));
-            ret.LastReferencedDirectory = true;
+            var ret = new Grouping_Mask<bool>();
+            ret.Nickname = true;
+            ret.Mappings = new MaskItem<bool, IEnumerable<MaskItemIndexed<bool, Mapping_Mask<bool>>>>(item.Mappings.HasBeenSet, item.Mappings.WithIndex().Select((i) => new MaskItemIndexed<bool, Mapping_Mask<bool>>(i.Index, true, i.Item.GetHasBeenSetMask())));
             return ret;
         }
 
@@ -1073,10 +1073,10 @@ namespace BethesdaGitSync.Internals
         #region Xml Write
         public static void Write_Xml(
             XElement node,
-            ISettingsGetter item,
+            IGroupingGetter item,
             bool doMasks,
-            out Settings_ErrorMask errorMask,
-            Settings_TranslationMask translationMask,
+            out Grouping_ErrorMask errorMask,
+            Grouping_TranslationMask translationMask,
             string name = null)
         {
             ErrorMaskBuilder errorMaskBuilder = doMasks ? new ErrorMaskBuilder() : null;
@@ -1086,21 +1086,21 @@ namespace BethesdaGitSync.Internals
                 item: item,
                 errorMask: errorMaskBuilder,
                 translationMask: translationMask?.GetCrystal());
-            errorMask = Settings_ErrorMask.Factory(errorMaskBuilder);
+            errorMask = Grouping_ErrorMask.Factory(errorMaskBuilder);
         }
 
         public static void Write_Xml(
             XElement node,
-            ISettingsGetter item,
+            IGroupingGetter item,
             ErrorMaskBuilder errorMask,
             TranslationCrystal translationMask,
             string name = null)
         {
-            var elem = new XElement(name ?? "BethesdaGitSync.Settings");
+            var elem = new XElement(name ?? "BethesdaGitSync.Grouping");
             node.Add(elem);
             if (name != null)
             {
-                elem.SetAttributeValue("type", "BethesdaGitSync.Settings");
+                elem.SetAttributeValue("type", "BethesdaGitSync.Grouping");
             }
             WriteToNode_Xml(
                 item: item,
@@ -1111,23 +1111,32 @@ namespace BethesdaGitSync.Internals
         #endregion
 
         public static void WriteToNode_Xml(
-            this ISettingsGetter item,
+            this IGroupingGetter item,
             XElement node,
             ErrorMaskBuilder errorMask,
             TranslationCrystal translationMask)
         {
-            if ((translationMask?.GetShouldTranslate((int)Settings_FieldIndex.Groupings) ?? true))
+            if ((translationMask?.GetShouldTranslate((int)Grouping_FieldIndex.Nickname) ?? true))
             {
-                ListXmlTranslation<Grouping>.Instance.Write(
+                StringXmlTranslation.Instance.Write(
                     node: node,
-                    name: nameof(item.Groupings),
-                    item: item.Groupings,
-                    fieldIndex: (int)Settings_FieldIndex.Groupings,
+                    name: nameof(item.Nickname),
+                    item: item.Nickname,
+                    fieldIndex: (int)Grouping_FieldIndex.Nickname,
+                    errorMask: errorMask);
+            }
+            if ((translationMask?.GetShouldTranslate((int)Grouping_FieldIndex.Mappings) ?? true))
+            {
+                ListXmlTranslation<Mapping>.Instance.Write(
+                    node: node,
+                    name: nameof(item.Mappings),
+                    item: item.Mappings,
+                    fieldIndex: (int)Grouping_FieldIndex.Mappings,
                     errorMask: errorMask,
-                    translationMask: translationMask?.GetSubCrystal((int)Settings_FieldIndex.Groupings),
-                    transl: (XElement subNode, Grouping subItem, ErrorMaskBuilder listSubMask, TranslationCrystal listTranslMask) =>
+                    translationMask: translationMask?.GetSubCrystal((int)Grouping_FieldIndex.Mappings),
+                    transl: (XElement subNode, Mapping subItem, ErrorMaskBuilder listSubMask, TranslationCrystal listTranslMask) =>
                     {
-                        LoquiXmlTranslation<Grouping>.Instance.Write(
+                        LoquiXmlTranslation<Mapping>.Instance.Write(
                             node: subNode,
                             item: subItem,
                             name: null,
@@ -1136,19 +1145,10 @@ namespace BethesdaGitSync.Internals
                     }
                     );
             }
-            if ((translationMask?.GetShouldTranslate((int)Settings_FieldIndex.LastReferencedDirectory) ?? true))
-            {
-                StringXmlTranslation.Instance.Write(
-                    node: node,
-                    name: nameof(item.LastReferencedDirectory),
-                    item: item.LastReferencedDirectory,
-                    fieldIndex: (int)Settings_FieldIndex.LastReferencedDirectory,
-                    errorMask: errorMask);
-            }
         }
 
         public static void FillPublic_Xml(
-            this Settings item,
+            this Grouping item,
             XElement node,
             ErrorMaskBuilder errorMask,
             TranslationCrystal translationMask)
@@ -1157,7 +1157,7 @@ namespace BethesdaGitSync.Internals
             {
                 foreach (var elem in node.Elements())
                 {
-                    SettingsCommon.FillPublicElement_Xml(
+                    GroupingCommon.FillPublicElement_Xml(
                         item: item,
                         node: elem,
                         name: elem.Name.LocalName,
@@ -1173,7 +1173,7 @@ namespace BethesdaGitSync.Internals
         }
 
         public static void FillPublicElement_Xml(
-            this Settings item,
+            this Grouping item,
             XElement node,
             string name,
             ErrorMaskBuilder errorMask,
@@ -1181,24 +1181,22 @@ namespace BethesdaGitSync.Internals
         {
             switch (name)
             {
-                case "Groupings":
-                    if ((translationMask?.GetShouldTranslate((int)Settings_FieldIndex.Groupings) ?? true))
+                case "Nickname":
+                    if ((translationMask?.GetShouldTranslate((int)Grouping_FieldIndex.Nickname) ?? true))
                     {
                         try
                         {
-                            errorMask?.PushIndex((int)Settings_FieldIndex.Groupings);
-                            if (ListXmlTranslation<Grouping>.Instance.Parse(
+                            errorMask?.PushIndex((int)Grouping_FieldIndex.Nickname);
+                            if (StringXmlTranslation.Instance.Parse(
                                 node: node,
-                                enumer: out var GroupingsItem,
-                                transl: LoquiXmlTranslation<Grouping>.Instance.Parse,
-                                errorMask: errorMask,
-                                translationMask: translationMask))
+                                item: out String NicknameParse,
+                                errorMask: errorMask))
                             {
-                                item.Groupings.SetTo(GroupingsItem);
+                                item.Nickname = NicknameParse;
                             }
                             else
                             {
-                                item.Groupings.Unset();
+                                item.Nickname = default(String);
                             }
                         }
                         catch (Exception ex)
@@ -1212,22 +1210,24 @@ namespace BethesdaGitSync.Internals
                         }
                     }
                     break;
-                case "LastReferencedDirectory":
-                    if ((translationMask?.GetShouldTranslate((int)Settings_FieldIndex.LastReferencedDirectory) ?? true))
+                case "Mappings":
+                    if ((translationMask?.GetShouldTranslate((int)Grouping_FieldIndex.Mappings) ?? true))
                     {
                         try
                         {
-                            errorMask?.PushIndex((int)Settings_FieldIndex.LastReferencedDirectory);
-                            if (StringXmlTranslation.Instance.Parse(
+                            errorMask?.PushIndex((int)Grouping_FieldIndex.Mappings);
+                            if (ListXmlTranslation<Mapping>.Instance.Parse(
                                 node: node,
-                                item: out String LastReferencedDirectoryParse,
-                                errorMask: errorMask))
+                                enumer: out var MappingsItem,
+                                transl: LoquiXmlTranslation<Mapping>.Instance.Parse,
+                                errorMask: errorMask,
+                                translationMask: translationMask))
                             {
-                                item.LastReferencedDirectory = LastReferencedDirectoryParse;
+                                item.Mappings.SetTo(MappingsItem);
                             }
                             else
                             {
-                                item.LastReferencedDirectory = default(String);
+                                item.Mappings.Unset();
                             }
                         }
                         catch (Exception ex)
@@ -1253,44 +1253,44 @@ namespace BethesdaGitSync.Internals
 
     #region Modules
     #region Mask
-    public class Settings_Mask<T> : IMask<T>, IEquatable<Settings_Mask<T>>
+    public class Grouping_Mask<T> : IMask<T>, IEquatable<Grouping_Mask<T>>
     {
         #region Ctors
-        public Settings_Mask()
+        public Grouping_Mask()
         {
         }
 
-        public Settings_Mask(T initialValue)
+        public Grouping_Mask(T initialValue)
         {
-            this.Groupings = new MaskItem<T, IEnumerable<MaskItemIndexed<T, Grouping_Mask<T>>>>(initialValue, null);
-            this.LastReferencedDirectory = initialValue;
+            this.Nickname = initialValue;
+            this.Mappings = new MaskItem<T, IEnumerable<MaskItemIndexed<T, Mapping_Mask<T>>>>(initialValue, null);
         }
         #endregion
 
         #region Members
-        public MaskItem<T, IEnumerable<MaskItemIndexed<T, Grouping_Mask<T>>>> Groupings;
-        public T LastReferencedDirectory;
+        public T Nickname;
+        public MaskItem<T, IEnumerable<MaskItemIndexed<T, Mapping_Mask<T>>>> Mappings;
         #endregion
 
         #region Equals
         public override bool Equals(object obj)
         {
-            if (!(obj is Settings_Mask<T> rhs)) return false;
+            if (!(obj is Grouping_Mask<T> rhs)) return false;
             return Equals(rhs);
         }
 
-        public bool Equals(Settings_Mask<T> rhs)
+        public bool Equals(Grouping_Mask<T> rhs)
         {
             if (rhs == null) return false;
-            if (!object.Equals(this.Groupings, rhs.Groupings)) return false;
-            if (!object.Equals(this.LastReferencedDirectory, rhs.LastReferencedDirectory)) return false;
+            if (!object.Equals(this.Nickname, rhs.Nickname)) return false;
+            if (!object.Equals(this.Mappings, rhs.Mappings)) return false;
             return true;
         }
         public override int GetHashCode()
         {
             int ret = 0;
-            ret = ret.CombineHashCode(this.Groupings?.GetHashCode());
-            ret = ret.CombineHashCode(this.LastReferencedDirectory?.GetHashCode());
+            ret = ret.CombineHashCode(this.Nickname?.GetHashCode());
+            ret = ret.CombineHashCode(this.Mappings?.GetHashCode());
             return ret;
         }
 
@@ -1299,48 +1299,49 @@ namespace BethesdaGitSync.Internals
         #region All Equal
         public bool AllEqual(Func<T, bool> eval)
         {
-            if (this.Groupings != null)
+            if (!eval(this.Nickname)) return false;
+            if (this.Mappings != null)
             {
-                if (!eval(this.Groupings.Overall)) return false;
-                if (this.Groupings.Specific != null)
+                if (!eval(this.Mappings.Overall)) return false;
+                if (this.Mappings.Specific != null)
                 {
-                    foreach (var item in this.Groupings.Specific)
+                    foreach (var item in this.Mappings.Specific)
                     {
                         if (!eval(item.Overall)) return false;
                         if (item.Specific != null && !item.Specific.AllEqual(eval)) return false;
                     }
                 }
             }
-            if (!eval(this.LastReferencedDirectory)) return false;
             return true;
         }
         #endregion
 
         #region Translate
-        public Settings_Mask<R> Translate<R>(Func<T, R> eval)
+        public Grouping_Mask<R> Translate<R>(Func<T, R> eval)
         {
-            var ret = new Settings_Mask<R>();
+            var ret = new Grouping_Mask<R>();
             this.Translate_InternalFill(ret, eval);
             return ret;
         }
 
-        protected void Translate_InternalFill<R>(Settings_Mask<R> obj, Func<T, R> eval)
+        protected void Translate_InternalFill<R>(Grouping_Mask<R> obj, Func<T, R> eval)
         {
-            if (Groupings != null)
+            obj.Nickname = eval(this.Nickname);
+            if (Mappings != null)
             {
-                obj.Groupings = new MaskItem<R, IEnumerable<MaskItemIndexed<R, Grouping_Mask<R>>>>();
-                obj.Groupings.Overall = eval(this.Groupings.Overall);
-                if (Groupings.Specific != null)
+                obj.Mappings = new MaskItem<R, IEnumerable<MaskItemIndexed<R, Mapping_Mask<R>>>>();
+                obj.Mappings.Overall = eval(this.Mappings.Overall);
+                if (Mappings.Specific != null)
                 {
-                    List<MaskItemIndexed<R, Grouping_Mask<R>>> l = new List<MaskItemIndexed<R, Grouping_Mask<R>>>();
-                    obj.Groupings.Specific = l;
-                    foreach (var item in Groupings.Specific.WithIndex())
+                    List<MaskItemIndexed<R, Mapping_Mask<R>>> l = new List<MaskItemIndexed<R, Mapping_Mask<R>>>();
+                    obj.Mappings.Specific = l;
+                    foreach (var item in Mappings.Specific.WithIndex())
                     {
-                        MaskItemIndexed<R, Grouping_Mask<R>> mask = default;
+                        MaskItemIndexed<R, Mapping_Mask<R>> mask = default;
                         mask.Index = item.Index;
                         if (item.Item != null)
                         {
-                            mask = new MaskItemIndexed<R, Grouping_Mask<R>>(item.Item.Index);
+                            mask = new MaskItemIndexed<R, Mapping_Mask<R>>(item.Item.Index);
                             mask.Overall = eval(item.Item.Overall);
                             if (item.Item.Specific != null)
                             {
@@ -1351,14 +1352,13 @@ namespace BethesdaGitSync.Internals
                     }
                 }
             }
-            obj.LastReferencedDirectory = eval(this.LastReferencedDirectory);
         }
         #endregion
 
         #region Clear Enumerables
         public void ClearEnumerables()
         {
-            this.Groupings.Specific = null;
+            this.Mappings.Specific = null;
         }
         #endregion
 
@@ -1368,32 +1368,36 @@ namespace BethesdaGitSync.Internals
             return ToString(printMask: null);
         }
 
-        public string ToString(Settings_Mask<bool> printMask = null)
+        public string ToString(Grouping_Mask<bool> printMask = null)
         {
             var fg = new FileGeneration();
             ToString(fg, printMask);
             return fg.ToString();
         }
 
-        public void ToString(FileGeneration fg, Settings_Mask<bool> printMask = null)
+        public void ToString(FileGeneration fg, Grouping_Mask<bool> printMask = null)
         {
-            fg.AppendLine($"{nameof(Settings_Mask<T>)} =>");
+            fg.AppendLine($"{nameof(Grouping_Mask<T>)} =>");
             fg.AppendLine("[");
             using (new DepthWrapper(fg))
             {
-                if (printMask?.Groupings?.Overall ?? true)
+                if (printMask?.Nickname ?? true)
                 {
-                    fg.AppendLine("Groupings =>");
+                    fg.AppendLine($"Nickname => {Nickname}");
+                }
+                if (printMask?.Mappings?.Overall ?? true)
+                {
+                    fg.AppendLine("Mappings =>");
                     fg.AppendLine("[");
                     using (new DepthWrapper(fg))
                     {
-                        if (Groupings.Overall != null)
+                        if (Mappings.Overall != null)
                         {
-                            fg.AppendLine(Groupings.Overall.ToString());
+                            fg.AppendLine(Mappings.Overall.ToString());
                         }
-                        if (Groupings.Specific != null)
+                        if (Mappings.Specific != null)
                         {
-                            foreach (var subItem in Groupings.Specific)
+                            foreach (var subItem in Mappings.Specific)
                             {
                                 fg.AppendLine("[");
                                 using (new DepthWrapper(fg))
@@ -1406,10 +1410,6 @@ namespace BethesdaGitSync.Internals
                     }
                     fg.AppendLine("]");
                 }
-                if (printMask?.LastReferencedDirectory ?? true)
-                {
-                    fg.AppendLine($"LastReferencedDirectory => {LastReferencedDirectory}");
-                }
             }
             fg.AppendLine("]");
         }
@@ -1417,7 +1417,7 @@ namespace BethesdaGitSync.Internals
 
     }
 
-    public class Settings_ErrorMask : IErrorMask, IErrorMask<Settings_ErrorMask>
+    public class Grouping_ErrorMask : IErrorMask, IErrorMask<Grouping_ErrorMask>
     {
         #region Members
         public Exception Overall { get; set; }
@@ -1433,20 +1433,20 @@ namespace BethesdaGitSync.Internals
                 return _warnings;
             }
         }
-        public MaskItem<Exception, IEnumerable<MaskItem<Exception, Grouping_ErrorMask>>> Groupings;
-        public Exception LastReferencedDirectory;
+        public Exception Nickname;
+        public MaskItem<Exception, IEnumerable<MaskItem<Exception, Mapping_ErrorMask>>> Mappings;
         #endregion
 
         #region IErrorMask
         public object GetNthMask(int index)
         {
-            Settings_FieldIndex enu = (Settings_FieldIndex)index;
+            Grouping_FieldIndex enu = (Grouping_FieldIndex)index;
             switch (enu)
             {
-                case Settings_FieldIndex.Groupings:
-                    return Groupings;
-                case Settings_FieldIndex.LastReferencedDirectory:
-                    return LastReferencedDirectory;
+                case Grouping_FieldIndex.Nickname:
+                    return Nickname;
+                case Grouping_FieldIndex.Mappings:
+                    return Mappings;
                 default:
                     throw new ArgumentException($"Index is out of range: {index}");
             }
@@ -1454,14 +1454,14 @@ namespace BethesdaGitSync.Internals
 
         public void SetNthException(int index, Exception ex)
         {
-            Settings_FieldIndex enu = (Settings_FieldIndex)index;
+            Grouping_FieldIndex enu = (Grouping_FieldIndex)index;
             switch (enu)
             {
-                case Settings_FieldIndex.Groupings:
-                    this.Groupings = new MaskItem<Exception, IEnumerable<MaskItem<Exception, Grouping_ErrorMask>>>(ex, null);
+                case Grouping_FieldIndex.Nickname:
+                    this.Nickname = ex;
                     break;
-                case Settings_FieldIndex.LastReferencedDirectory:
-                    this.LastReferencedDirectory = ex;
+                case Grouping_FieldIndex.Mappings:
+                    this.Mappings = new MaskItem<Exception, IEnumerable<MaskItem<Exception, Mapping_ErrorMask>>>(ex, null);
                     break;
                 default:
                     throw new ArgumentException($"Index is out of range: {index}");
@@ -1470,14 +1470,14 @@ namespace BethesdaGitSync.Internals
 
         public void SetNthMask(int index, object obj)
         {
-            Settings_FieldIndex enu = (Settings_FieldIndex)index;
+            Grouping_FieldIndex enu = (Grouping_FieldIndex)index;
             switch (enu)
             {
-                case Settings_FieldIndex.Groupings:
-                    this.Groupings = (MaskItem<Exception, IEnumerable<MaskItem<Exception, Grouping_ErrorMask>>>)obj;
+                case Grouping_FieldIndex.Nickname:
+                    this.Nickname = (Exception)obj;
                     break;
-                case Settings_FieldIndex.LastReferencedDirectory:
-                    this.LastReferencedDirectory = (Exception)obj;
+                case Grouping_FieldIndex.Mappings:
+                    this.Mappings = (MaskItem<Exception, IEnumerable<MaskItem<Exception, Mapping_ErrorMask>>>)obj;
                     break;
                 default:
                     throw new ArgumentException($"Index is out of range: {index}");
@@ -1487,8 +1487,8 @@ namespace BethesdaGitSync.Internals
         public bool IsInError()
         {
             if (Overall != null) return true;
-            if (Groupings != null) return true;
-            if (LastReferencedDirectory != null) return true;
+            if (Nickname != null) return true;
+            if (Mappings != null) return true;
             return false;
         }
         #endregion
@@ -1503,7 +1503,7 @@ namespace BethesdaGitSync.Internals
 
         public void ToString(FileGeneration fg)
         {
-            fg.AppendLine("Settings_ErrorMask =>");
+            fg.AppendLine("Grouping_ErrorMask =>");
             fg.AppendLine("[");
             using (new DepthWrapper(fg))
             {
@@ -1523,17 +1523,18 @@ namespace BethesdaGitSync.Internals
         }
         protected void ToString_FillInternal(FileGeneration fg)
         {
-            fg.AppendLine("Groupings =>");
+            fg.AppendLine($"Nickname => {Nickname}");
+            fg.AppendLine("Mappings =>");
             fg.AppendLine("[");
             using (new DepthWrapper(fg))
             {
-                if (Groupings.Overall != null)
+                if (Mappings.Overall != null)
                 {
-                    fg.AppendLine(Groupings.Overall.ToString());
+                    fg.AppendLine(Mappings.Overall.ToString());
                 }
-                if (Groupings.Specific != null)
+                if (Mappings.Specific != null)
                 {
-                    foreach (var subItem in Groupings.Specific)
+                    foreach (var subItem in Mappings.Specific)
                     {
                         fg.AppendLine("[");
                         using (new DepthWrapper(fg))
@@ -1545,19 +1546,18 @@ namespace BethesdaGitSync.Internals
                 }
             }
             fg.AppendLine("]");
-            fg.AppendLine($"LastReferencedDirectory => {LastReferencedDirectory}");
         }
         #endregion
 
         #region Combine
-        public Settings_ErrorMask Combine(Settings_ErrorMask rhs)
+        public Grouping_ErrorMask Combine(Grouping_ErrorMask rhs)
         {
-            var ret = new Settings_ErrorMask();
-            ret.Groupings = new MaskItem<Exception, IEnumerable<MaskItem<Exception, Grouping_ErrorMask>>>(this.Groupings.Overall.Combine(rhs.Groupings.Overall), new List<MaskItem<Exception, Grouping_ErrorMask>>(this.Groupings.Specific.And(rhs.Groupings.Specific)));
-            ret.LastReferencedDirectory = this.LastReferencedDirectory.Combine(rhs.LastReferencedDirectory);
+            var ret = new Grouping_ErrorMask();
+            ret.Nickname = this.Nickname.Combine(rhs.Nickname);
+            ret.Mappings = new MaskItem<Exception, IEnumerable<MaskItem<Exception, Mapping_ErrorMask>>>(this.Mappings.Overall.Combine(rhs.Mappings.Overall), new List<MaskItem<Exception, Mapping_ErrorMask>>(this.Mappings.Specific.And(rhs.Mappings.Specific)));
             return ret;
         }
-        public static Settings_ErrorMask Combine(Settings_ErrorMask lhs, Settings_ErrorMask rhs)
+        public static Grouping_ErrorMask Combine(Grouping_ErrorMask lhs, Grouping_ErrorMask rhs)
         {
             if (lhs != null && rhs != null) return lhs.Combine(rhs);
             return lhs ?? rhs;
@@ -1565,50 +1565,50 @@ namespace BethesdaGitSync.Internals
         #endregion
 
         #region Factory
-        public static Settings_ErrorMask Factory(ErrorMaskBuilder errorMask)
+        public static Grouping_ErrorMask Factory(ErrorMaskBuilder errorMask)
         {
             if (errorMask?.Empty ?? true) return null;
-            return new Settings_ErrorMask();
+            return new Grouping_ErrorMask();
         }
         #endregion
 
     }
-    public class Settings_CopyMask
+    public class Grouping_CopyMask
     {
-        public Settings_CopyMask()
+        public Grouping_CopyMask()
         {
         }
 
-        public Settings_CopyMask(bool defaultOn, CopyOption deepCopyOption = CopyOption.Reference)
+        public Grouping_CopyMask(bool defaultOn, CopyOption deepCopyOption = CopyOption.Reference)
         {
-            this.Groupings = new MaskItem<CopyOption, Grouping_CopyMask>(deepCopyOption, default);
-            this.LastReferencedDirectory = defaultOn;
+            this.Nickname = defaultOn;
+            this.Mappings = new MaskItem<CopyOption, Mapping_CopyMask>(deepCopyOption, default);
         }
 
         #region Members
-        public MaskItem<CopyOption, Grouping_CopyMask> Groupings;
-        public bool LastReferencedDirectory;
+        public bool Nickname;
+        public MaskItem<CopyOption, Mapping_CopyMask> Mappings;
         #endregion
 
     }
 
-    public class Settings_TranslationMask : ITranslationMask
+    public class Grouping_TranslationMask : ITranslationMask
     {
         #region Members
         private TranslationCrystal _crystal;
-        public MaskItem<bool, Grouping_TranslationMask> Groupings;
-        public bool LastReferencedDirectory;
+        public bool Nickname;
+        public MaskItem<bool, Mapping_TranslationMask> Mappings;
         #endregion
 
         #region Ctors
-        public Settings_TranslationMask()
+        public Grouping_TranslationMask()
         {
         }
 
-        public Settings_TranslationMask(bool defaultOn)
+        public Grouping_TranslationMask(bool defaultOn)
         {
-            this.Groupings = new MaskItem<bool, Grouping_TranslationMask>(defaultOn, null);
-            this.LastReferencedDirectory = defaultOn;
+            this.Nickname = defaultOn;
+            this.Mappings = new MaskItem<bool, Mapping_TranslationMask>(defaultOn, null);
         }
 
         #endregion
@@ -1627,8 +1627,8 @@ namespace BethesdaGitSync.Internals
 
         protected void GetCrystal(List<(bool On, TranslationCrystal SubCrystal)> ret)
         {
-            ret.Add((Groupings?.Overall ?? true, Groupings?.Specific?.GetCrystal()));
-            ret.Add((LastReferencedDirectory, null));
+            ret.Add((Nickname, null));
+            ret.Add((Mappings?.Overall ?? true, Mappings?.Specific?.GetCrystal()));
         }
     }
     #endregion

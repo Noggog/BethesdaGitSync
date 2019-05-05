@@ -10,6 +10,7 @@ namespace Loqui
         {
             LoquiRegistration.Register(BethesdaGitSync.Internals.Settings_Registration.Instance);
             LoquiRegistration.Register(BethesdaGitSync.Internals.Mapping_Registration.Instance);
+            LoquiRegistration.Register(BethesdaGitSync.Internals.Grouping_Registration.Instance);
         }
     }
 }

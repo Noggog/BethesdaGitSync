@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="us-ascii"?>
 <xs:schema id="Settings" targetNamespace="BethesdaGitSync" elementFormDefault="qualified" xmlns="BethesdaGitSync" xmlns:xs="http://www.w3.org/2001/XMLSchema">
    <xs:include schemaLocation="..\Common.xsd" />
-   <xs:include schemaLocation="Mapping.xsd" />
+   <xs:include schemaLocation="Grouping.xsd" />
    <xs:element name="Settings" type="SettingsType" />
    <xs:complexType name="SettingsType">
       <xs:choice minOccurs="0" maxOccurs="unbounded">
-         <xs:element name="Mappings" type="MappingsType" minOccurs="0" maxOccurs="1" />
+         <xs:element name="Groupings" type="GroupingsType" minOccurs="0" maxOccurs="1" />
          <xs:element name="LastReferencedDirectory" type="NullableValueType" minOccurs="0" maxOccurs="1" />
       </xs:choice>
    </xs:complexType>
-   <xs:complexType name="MappingsType">
+   <xs:complexType name="GroupingsType">
       <xs:choice minOccurs="0" maxOccurs="unbounded">
-         <xs:element name="Item" type="MappingType" />
+         <xs:element name="Item" type="GroupingType" />
       </xs:choice>
    </xs:complexType>
 </xs:schema>

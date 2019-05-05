@@ -60,6 +60,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="VMs\GroupingVM.cs" />
     <Compile Include="VMs\MappingSettingsVM.cs" />
     <Compile Include="XAML\MappingSettingsView.xaml.cs">
       <DependentUpon>MappingSettingsView.xaml</DependentUpon>
@@ -95,6 +96,9 @@
       <SubType>Designer</SubType>
     </Page>
     <Compile Include="ProtocolDefinition_BethesdaGitSync.cs" />
+    <Compile Include="Settings\Grouping_LoquiGenerated.cs">
+      <DependentUpon>Settings.xml</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs">
@@ -130,6 +134,9 @@
       <DependentUpon>Settings.xml</DependentUpon>
     </None>
     <None Include="Common.xsd" />
+    <None Include="Settings\Grouping.xsd">
+      <DependentUpon>Settings.xml</DependentUpon>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -179,7 +186,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Settings\Settings.xml" />
+    <Resource Include="Settings\Settings.xml">
+      <SubType>Designer</SubType>
+    </Resource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

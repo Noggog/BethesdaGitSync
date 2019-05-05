@@ -59,7 +59,11 @@
             <ComboBox
                 Grid.Row="0"
                 Grid.Column="2"
-                BorderThickness="0" />
+                BorderThickness="0"
+                DisplayMemberPath="Settings.Nickname"
+                ItemsSource="{Binding Groupings}"
+                SelectedValue="{Binding SelectedGroup}"
+                ToolTip="Currently selected sync group" />
             <Border
                 Grid.Row="0"
                 Grid.Column="2"
@@ -69,7 +73,7 @@
                 Grid.Row="1"
                 Grid.Column="1"
                 Grid.ColumnSpan="3"
-                ItemsSource="{Binding Mappings}"
+                ItemsSource="{Binding SelectedGroup.Mappings}"
                 SelectionMode="Extended">
                 <ListBox.ItemContainerStyle>
                     <Style BasedOn="{StaticResource MetroListBoxItem}" TargetType="{x:Type ListBoxItem}">

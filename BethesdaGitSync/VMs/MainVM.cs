@@ -14,10 +14,11 @@ namespace BethesdaGitSync
 {
     public class MainVM : ReactiveObject
     {
+        public static MainVM Instance { get; private set; }
         public Settings Settings { get; }
-        private ObservableCollectionExtended<MappingVM> _Mappings { get; } = new ObservableCollectionExtended<MappingVM>();
-        private IObservableList<MappingVM> _SelectedMappings;
-        public IObservableCollection<MappingVM> Mappings => _Mappings;
+        public ObservableCollectionExtended<GroupingVM> Groupings { get; } = new ObservableCollectionExtended<GroupingVM>();
+        private GroupingVM _SelectedGroup;
+        public GroupingVM SelectedGroup { get => _SelectedGroup; set => this.RaiseAndSetIfChanged(ref _SelectedGroup, value); }
         public ICommand AddCommand { get; }
         public ICommand HelpCommand { get; }
         public ICommand SyncToGitCommand { get; }
@@ -30,25 +31,39 @@ namespace BethesdaGitSync
 
         public MainVM(MainWindow window)
         {
+            Instance = this;
             this.Settings = Settings.Create_Xml(SettingsPath);
-            this.MappingEditorVM = new MappingSettingsEditorVM(this);
-            this._SelectedMappings = this.Settings.Mappings
-                .Connect()
+            this.MappingEditorVM = new MappingSettingsEditorVM();
+            if (this.Settings.Groupings.Count == 0)
+            {
+                this.Settings.Groupings.Add(new Grouping()
+                {
+                    Nickname = "Default"
+                });
+            }
+            this.Settings.Groupings.Connect()
                 .ObserveOn(RxApp.MainThreadScheduler)
-                .Transform(m => new MappingVM(this, m))
+                .Transform(g => new GroupingVM(g))
                 .DisposeMany()
-                // Bind to visible mappings for GUI
-                .Bind(this._Mappings)
-                // Filter ones that are selected, and save to collection
-                .AutoRefresh(m => m.IsSelected)
-                .Filter(m => m.IsSelected)
-                .AsObservableList();
+                .Bind(this.Groupings)
+                // Set selected group to first item on list
+                .QueryWhenChanged(query => query.FirstOrDefault())
+                .CombineLatest(
+                    this.WhenAny(x => x.SelectedGroup)
+                        .DistinctUntilChanged(),
+                    resultSelector: (First, Selected) => (First, Selected))
+                .Subscribe(tup =>
+                {
+                    if (tup.Selected == null)
+                    {
+                        this.SelectedGroup = tup.First;
+                    }
+                });
             this.AddCommand = ReactiveCommand.Create(
                 execute: () =>
                 {
                     this.MappingEditorVM.Target(
                         new MappingVM(
-                            this,
                             new Mapping()),
                         newItem: true);
                 });
@@ -64,7 +79,8 @@ namespace BethesdaGitSync
             this.SyncToGitCommand = ReactiveCommand.CreateFromTask(
                 execute: async () =>
                 {
-                    var toSync = this._SelectedMappings.ToArray();
+                    var toSync = this.SelectedGroup?.SelectedMappings.ToArray();
+                    if (toSync == null) return;
                     foreach (var item in toSync)
                     {
                         try
@@ -77,14 +93,15 @@ namespace BethesdaGitSync
                         }
                     }
                 },
-                canExecute: this._SelectedMappings
-                    .CountChanged
+                canExecute: this.WhenAny(x => x.SelectedGroup.SelectedMappings.CountChanged)
+                    .Switch()
                     .Select(c => c > 0));
 
             this.SyncToBinaryCommand = ReactiveCommand.CreateFromTask(
                 execute: async () =>
                 {
-                    var toSync = this._SelectedMappings.ToArray();
+                    var toSync = this.SelectedGroup?.SelectedMappings.ToArray();
+                    if (toSync == null) return;
                     foreach (var item in toSync)
                     {
                         try
@@ -97,8 +114,8 @@ namespace BethesdaGitSync
                         }
                     }
                 },
-                canExecute: this._SelectedMappings
-                    .CountChanged
+                canExecute: this.WhenAny(x => x.SelectedGroup.SelectedMappings.CountChanged)
+                    .Switch()
                     .Select(c => c > 0));
         }
     }

@@ -37,7 +37,7 @@ namespace BethesdaGitSync
 
         public Mapping DisplayedSettings { get; } = new Mapping();
 
-        public MappingSettingsEditorVM(MainVM mainVM)
+        public MappingSettingsEditorVM()
         {
             this.DiscardCommand = ReactiveCommand.Create(
                 execute: this.Close,
@@ -48,7 +48,7 @@ namespace BethesdaGitSync
                     Apply();
                     if (this.NewEntry)
                     {
-                        mainVM.Settings.Mappings.Add(this.TargetMapping.Mapping);
+                        MainVM.Instance.SelectedGroup?.Settings.Mappings.Add(this.TargetMapping.Mapping);
                     }
                     Close();
                 },
@@ -67,7 +67,7 @@ namespace BethesdaGitSync
                 {
                     if (!this.NewEntry)
                     {
-                        mainVM.Settings.Mappings.Remove(this.TargetMapping.Mapping);
+                        MainVM.Instance.SelectedGroup?.Settings.Mappings.Remove(this.TargetMapping.Mapping);
                     }
                     Close();
                 });
@@ -88,13 +88,13 @@ namespace BethesdaGitSync
                 {
                     using (var fbd = new FolderBrowserDialog())
                     {
-                        fbd.SelectedPath = mainVM.Settings.LastReferencedDirectory;
+                        fbd.SelectedPath = MainVM.Instance.Settings.LastReferencedDirectory;
                         DialogResult result = fbd.ShowDialog();
 
                         if (result == DialogResult.OK)
                         {
                             this.DisplayedSettings.FolderPath = fbd.SelectedPath;
-                            mainVM.Settings.LastReferencedDirectory = fbd.SelectedPath;
+                            MainVM.Instance.Settings.LastReferencedDirectory = fbd.SelectedPath;
                         }
                     }
                 });
