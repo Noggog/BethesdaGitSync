@@ -2,10 +2,10 @@
    <ParentRepos>
       <RepoListing>
          <Nickname>CSharpExt</Nickname>
-         <Sha>ba92ba5d74a196ff2038b5bcc87218d6c4701ed9</Sha>
+         <Sha>c56036ea7c18033d133816fdcf1cb19a0a442661</Sha>
          <Path>../CSharpExt</Path>
-         <CommitDate>05-05-2019 22:54:15</CommitDate>
-         <Description>ObservableUtility.FlipFlop</Description>
+         <CommitDate>05-06-2019 00:04:10</CommitDate>
+         <Description>ShowSelectedInExplorer helper class</Description>
          <Author>Justin Swanson</Author>
       </RepoListing>
       <RepoListing>

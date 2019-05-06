@@ -1,6 +1,7 @@
 ﻿using Mutagen.Bethesda;
 using Mutagen.Bethesda.GitSync;
 using Noggog;
+using Noggog.Utility;
 using Noggog.WPF;
 using ReactiveUI;
 using System;
@@ -50,6 +51,9 @@ namespace BethesdaGitSync
         public string LastFolderError { get => _LastFolderError; set => this.RaiseAndSetIfChanged(ref _LastFolderError, value); }
 
         public ICommand OpenSettingsCommand { get; }
+        public ICommand NavigateToBinaryCommand { get; }
+        public ICommand NavigateToFolderCommand { get; }
+        public ICommand NavigateToBackupCommand { get; }
 
         private bool _IsSelected;
         public bool IsSelected { get => _IsSelected; set => this.RaiseAndSetIfChanged(ref _IsSelected, value); }
@@ -57,6 +61,8 @@ namespace BethesdaGitSync
         private Subject<Unit> flashSubj = new Subject<Unit>();
         private readonly ObservableAsPropertyHelper<bool> _Flash;
         public bool Flash => _Flash.Value;
+
+        public string BackupPath { get; }
 
         public MappingVM(Mapping mapping)
         {
@@ -69,6 +75,12 @@ namespace BethesdaGitSync
                         this,
                         newItem: false);
                 });
+            this.NavigateToBinaryCommand = ReactiveCommand.Create(
+                execute: () => ShowSelectedInExplorer.FileOrFolder(this.Mapping.BinaryPath.Path));
+            this.NavigateToFolderCommand = ReactiveCommand.Create(
+                execute: () => ShowSelectedInExplorer.FileOrFolder(this.Mapping.FolderPath.Path));
+            this.NavigateToBackupCommand = ReactiveCommand.Create(
+                execute: () => ShowSelectedInExplorer.FileOrFolder(this.BackupPath));
 
             this._Nickname = Observable.CombineLatest(
                     this.WhenAny(x => x.Mapping.Nickname),
@@ -91,6 +103,8 @@ namespace BethesdaGitSync
 
             _Flash = ObservableUtility.FlipFlop(flashSubj, TimeSpan.FromMilliseconds(400))
                 .ToProperty(this, nameof(Flash));
+
+            this.BackupPath = Path.Combine(MainVM.BackupPath, this.Nickname);
         }
 
         private static string ConstructErrorMessage(GitConversionUtility.Error err, FilePath binaryPath, string sourcePath)
@@ -119,7 +133,7 @@ namespace BethesdaGitSync
                     this.Mapping.FolderPath,
                     GitConversionInstructions.Oblivion(ModKey.Dummy),
                     checkCorrectness: true,
-                    backupFolder: Path.Combine(MainVM.BackupPath, this.Nickname));
+                    backupFolder: this.BackupPath);
                 this.LastFolderError = ConstructErrorMessage(err, this.Mapping.BinaryPath, this.Mapping.FolderPath.Path);
             }
             catch (Exception ex)
@@ -138,7 +152,7 @@ namespace BethesdaGitSync
                     this.Mapping.BinaryPath,
                     GitConversionInstructions.Oblivion(ModKey.Dummy),
                     checkCorrectness: true,
-                    backupFolder: Path.Combine(MainVM.BackupPath, this.Nickname));
+                    backupFolder: this.BackupPath);
                 this.LastBinaryError = ConstructErrorMessage(err, this.Mapping.BinaryPath, this.Mapping.FolderPath.Path);
             }
             catch (Exception ex)

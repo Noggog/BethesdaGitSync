@@ -28,6 +28,15 @@
             </Style.Triggers>
         </Style>
     </UserControl.Resources>
+    <UserControl.ContextMenu>
+        <ContextMenu>
+            <MenuItem Command="{Binding OpenSettingsCommand}" Header="Settings" />
+            <Separator />
+            <MenuItem Command="{Binding NavigateToBinaryCommand}" Header="Navigate to Binary" />
+            <MenuItem Command="{Binding NavigateToFolderCommand}" Header="Navigate to Git Folder" />
+            <MenuItem Command="{Binding NavigateToBackupCommand}" Header="Navigate to Backups" />
+        </ContextMenu>
+    </UserControl.ContextMenu>
     <Border BorderBrush="{StaticResource SeparationLineBrush}" BorderThickness="0,0,0,1">
         <Grid
             x:Name="FramingGrid"
