@@ -2,10 +2,10 @@
    <ParentRepos>
       <RepoListing>
          <Nickname>CSharpExt</Nickname>
-         <Sha>28e2e56b5c4ace17fe04975e6cfe32c80e84d1a5</Sha>
+         <Sha>ba92ba5d74a196ff2038b5bcc87218d6c4701ed9</Sha>
          <Path>../CSharpExt</Path>
-         <CommitDate>05-05-2019 02:01:41</CommitDate>
-         <Description>Protected data accessor for BinaryMemoryReadStream</Description>
+         <CommitDate>05-05-2019 22:54:15</CommitDate>
+         <Description>ObservableUtility.FlipFlop</Description>
          <Author>Justin Swanson</Author>
       </RepoListing>
       <RepoListing>
@@ -26,10 +26,10 @@
       </RepoListing>
       <RepoListing>
          <Nickname>Mutagen</Nickname>
-         <Sha>71b2dacc8d8a4f8b11e8f63130fec0affd0ddb4c</Sha>
+         <Sha>82b62dcfed6f9d71707bef7940df7b297ae44911</Sha>
          <Path>../Mutagen</Path>
-         <CommitDate>05-05-2019 02:02:48</CommitDate>
-         <Description>Some oddball optimizations</Description>
+         <CommitDate>05-05-2019 17:46:49</CommitDate>
+         <Description>Tweak to improve memory usage in tests</Description>
          <Author>Justin Swanson</Author>
       </RepoListing>
    </ParentRepos>

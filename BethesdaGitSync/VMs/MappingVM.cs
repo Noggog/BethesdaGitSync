@@ -1,12 +1,15 @@
 ﻿using Mutagen.Bethesda;
 using Mutagen.Bethesda.GitSync;
 using Noggog;
+using Noggog.WPF;
 using ReactiveUI;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reactive;
 using System.Reactive.Linq;
+using System.Reactive.Subjects;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
@@ -51,6 +54,10 @@ namespace BethesdaGitSync
         private bool _IsSelected;
         public bool IsSelected { get => _IsSelected; set => this.RaiseAndSetIfChanged(ref _IsSelected, value); }
 
+        private Subject<Unit> flashSubj = new Subject<Unit>();
+        private readonly ObservableAsPropertyHelper<bool> _Flash;
+        public bool Flash => _Flash.Value;
+
         public MappingVM(Mapping mapping)
         {
             this.Mapping = mapping;
@@ -81,26 +88,64 @@ namespace BethesdaGitSync
                     .Cast<DirectoryPath, IPath>(),
                 this.WhenAny(x => x.LastFolderError))
                 .ToProperty(this, nameof(FolderStatus));
+
+            _Flash = ObservableUtility.FlipFlop(flashSubj, TimeSpan.FromMilliseconds(400))
+                .ToProperty(this, nameof(Flash));
+        }
+
+        private static string ConstructErrorMessage(GitConversionUtility.Error err, FilePath binaryPath, string sourcePath)
+        {
+            switch (err)
+            {
+                case GitConversionUtility.Error.None:
+                    return null;
+                case GitConversionUtility.Error.ModKey:
+                    return $"Could not construct a ModKey from given binary path: {binaryPath.Name}.  Expected .esp/.esm file type.";
+                case GitConversionUtility.Error.DidNotExist:
+                    return $"Source path did not exist: {sourcePath}.";
+                case GitConversionUtility.Error.Corrupted:
+                    return $"Correctness logic detected corruption in the sync.  Cancelled.";
+                default:
+                    throw new NotImplementedException();
+            }
         }
 
         public async Task SyncToGit()
         {
-            await GitConversionUtility.ConvertToFolder(
-                this.Mapping.BinaryPath,
-                this.Mapping.FolderPath,
-                GitConversionInstructions.Oblivion(ModKey.Dummy),
-                checkCorrectness: true,
-                backupFolder: Path.Combine(MainVM.BackupPath, this.Nickname));
+            try
+            {
+                var err = await GitConversionUtility.ConvertToFolder(
+                    this.Mapping.BinaryPath,
+                    this.Mapping.FolderPath,
+                    GitConversionInstructions.Oblivion(ModKey.Dummy),
+                    checkCorrectness: true,
+                    backupFolder: Path.Combine(MainVM.BackupPath, this.Nickname));
+                this.LastFolderError = ConstructErrorMessage(err, this.Mapping.BinaryPath, this.Mapping.FolderPath.Path);
+            }
+            catch (Exception ex)
+            {
+                this.LastFolderError = ex.Message;
+            }
+            flashSubj.OnNext(Unit.Default);
         }
 
         public async Task SyncToBinary()
         {
-            await GitConversionUtility.ConvertToBinary(
-                this.Mapping.FolderPath,
-                this.Mapping.BinaryPath,
-                GitConversionInstructions.Oblivion(ModKey.Dummy),
-                checkCorrectness: true,
-                backupFolder: Path.Combine(MainVM.BackupPath, this.Nickname));
+            try
+            {
+                var err = await GitConversionUtility.ConvertToBinary(
+                    this.Mapping.FolderPath,
+                    this.Mapping.BinaryPath,
+                    GitConversionInstructions.Oblivion(ModKey.Dummy),
+                    checkCorrectness: true,
+                    backupFolder: Path.Combine(MainVM.BackupPath, this.Nickname));
+                this.LastBinaryError = ConstructErrorMessage(err, this.Mapping.BinaryPath, this.Mapping.FolderPath.Path);
+            }
+            catch (Exception ex)
+            {
+                this.LastFolderError = ex.Message;
+            }
+            flashSubj.OnNext(Unit.Default);
         }
 
         private static IObservable<StatusPair> GetStatusObservable(

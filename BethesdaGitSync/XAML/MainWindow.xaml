@@ -25,6 +25,56 @@
         </Controls:WindowCommands>
     </Controls:MetroWindow.RightWindowCommands>
     <Grid>
+        <Grid.Resources>
+            <Style
+                x:Key="GitFlashButtonStyle"
+                BasedOn="{StaticResource MainButtonStyle}"
+                TargetType="Button">
+                <Style.Resources>
+                    <Storyboard x:Key="flashAnimation">
+                        <ColorAnimation
+                                Storyboard.TargetProperty="(Button.Background).(SolidColorBrush.Color)"
+                                From="White"
+                                Duration="0:0:0.5">
+                            <ColorAnimation.EasingFunction>
+                                <CubicEase />
+                            </ColorAnimation.EasingFunction>
+                        </ColorAnimation>
+                    </Storyboard>
+                </Style.Resources>
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding SyncedToGitFlash}" Value="True">
+                        <DataTrigger.EnterActions>
+                            <BeginStoryboard Name="flash" Storyboard="{StaticResource flashAnimation}" />
+                        </DataTrigger.EnterActions>
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+            <Style
+                x:Key="BinaryFlashButtonStyle"
+                BasedOn="{StaticResource MainButtonStyle}"
+                TargetType="Button">
+                <Style.Resources>
+                    <Storyboard x:Key="flashAnimation">
+                        <ColorAnimation
+                                Storyboard.TargetProperty="(Button.Background).(SolidColorBrush.Color)"
+                                From="White"
+                                Duration="0:0:0.5">
+                            <ColorAnimation.EasingFunction>
+                                <CubicEase />
+                            </ColorAnimation.EasingFunction>
+                        </ColorAnimation>
+                    </Storyboard>
+                </Style.Resources>
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding SyncedToBinaryFlash}" Value="True">
+                        <DataTrigger.EnterActions>
+                            <BeginStoryboard Name="flash" Storyboard="{StaticResource flashAnimation}" />
+                        </DataTrigger.EnterActions>
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+        </Grid.Resources>
         <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="15" />
@@ -44,6 +94,7 @@
                 Grid.ColumnSpan="2"
                 Command="{Binding SyncToBinaryCommand}"
                 Focusable="False"
+                Style="{StaticResource BinaryFlashButtonStyle}"
                 ToolTip="Sync selected mappings from Git folder representation to Bethesda mod format.">
                 <icon:PackIconOcticons Kind="FileBinary" />
             </Button>
@@ -55,6 +106,7 @@
                 BorderThickness="1,0"
                 Command="{Binding SyncToBinaryCommand}"
                 Focusable="False"
+                Style="{StaticResource BinaryFlashButtonStyle}"
                 ToolTip="Sync selected mappings from Git folder representation to Bethesda mod format." />
             <ComboBox
                 Grid.Row="0"
@@ -93,6 +145,7 @@
                 Grid.ColumnSpan="2"
                 Command="{Binding SyncToGitCommand}"
                 Focusable="False"
+                Style="{StaticResource GitFlashButtonStyle}"
                 ToolTip="Sync selected mappings from Bethesda mod format to Git folder representation.">
                 <icon:PackIconMaterial Kind="Git" />
             </Button>
@@ -104,6 +157,7 @@
                 BorderThickness="1,0"
                 Command="{Binding SyncToGitCommand}"
                 Focusable="False"
+                Style="{StaticResource GitFlashButtonStyle}"
                 ToolTip="Sync selected mappings from Bethesda mod format to Git folder representation." />
             <Border
                 Grid.Row="2"

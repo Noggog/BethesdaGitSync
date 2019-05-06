@@ -1,10 +1,13 @@
-using DynamicData;
+﻿using DynamicData;
 using DynamicData.Binding;
+using Noggog.WPF;
 using ReactiveUI;
 using System;
 using System.IO;
 using System.Linq;
+using System.Reactive;
 using System.Reactive.Linq;
+using System.Reactive.Subjects;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -14,18 +17,30 @@ namespace BethesdaGitSync
 {
     public class MainVM : ReactiveObject
     {
+        // Static constants
         public static MainVM Instance { get; private set; }
+        public const string AppName = "BethesdaGitSync";
+        public static readonly string SettingsPath = Path.Combine(Environment.GetEnvironmentVariable("LocalAppData"), $"{AppName}/Settings.xml");
+        public static readonly string BackupPath = Path.Combine(System.IO.Path.GetTempPath(), AppName);
+
         public Settings Settings { get; }
         public ObservableCollectionExtended<GroupingVM> Groupings { get; } = new ObservableCollectionExtended<GroupingVM>();
         private GroupingVM _SelectedGroup;
         public GroupingVM SelectedGroup { get => _SelectedGroup; set => this.RaiseAndSetIfChanged(ref _SelectedGroup, value); }
+
+        // Signals
+        private Subject<Unit> _syncedToGit = new Subject<Unit>();
+        private readonly ObservableAsPropertyHelper<bool> _SyncedToGitFlash;
+        public bool SyncedToGitFlash => _SyncedToGitFlash.Value;
+        private Subject<Unit> _syncedToBinary = new Subject<Unit>();
+        private readonly ObservableAsPropertyHelper<bool> _SyncedToBinaryFlash;
+        public bool SyncedToBinaryFlash => _SyncedToBinaryFlash.Value;
+
+        // Commands
         public ICommand AddCommand { get; }
         public ICommand HelpCommand { get; }
         public ICommand SyncToGitCommand { get; }
         public ICommand SyncToBinaryCommand { get; }
-        public const string AppName = "BethesdaGitSync";
-        public static readonly string SettingsPath = Path.Combine(Environment.GetEnvironmentVariable("LocalAppData"), $"{AppName}/Settings.xml");
-        public static readonly string BackupPath = Path.Combine(System.IO.Path.GetTempPath(), AppName);
 
         public MappingSettingsEditorVM MappingEditorVM { get; }
 
@@ -87,16 +102,11 @@ namespace BethesdaGitSync
                         {
                             return Task.Run(async () =>
                             {
-                                try
-                                {
-                            await item.SyncToGit();
-                                }
-                                catch (Exception ex)
-                                {
-                                    item.LastBinaryError = ex.Message;
-                                }
+                                await item.SyncToGit();
+                                GC.Collect();
                             });
                         }));
+                        _syncedToGit.OnNext(Unit.Default);
                     });
                 },
                 canExecute: this.WhenAny(x => x.SelectedGroup.SelectedMappings.CountChanged)
@@ -116,19 +126,26 @@ namespace BethesdaGitSync
                             {
                                 try
                                 {
-                            await item.SyncToBinary();
-                        }
-                        catch (Exception ex)
+                                    await item.SyncToBinary();
+                                    GC.Collect();
+                                }
+                                catch (Exception ex)
                                 {
                                     item.LastBinaryError = ex.Message;
                                 }
                             });
                         }));
+                        _syncedToBinary.OnNext(Unit.Default);
                     });
                 },
                 canExecute: this.WhenAny(x => x.SelectedGroup.SelectedMappings.CountChanged)
                     .Switch()
                     .Select(c => c > 0));
+
+            _SyncedToBinaryFlash = ObservableUtility.FlipFlop(_syncedToBinary, TimeSpan.FromMilliseconds(400))
+                .ToProperty(this, nameof(SyncedToBinaryFlash));
+            _SyncedToGitFlash = ObservableUtility.FlipFlop(_syncedToGit, TimeSpan.FromMilliseconds(400))
+                .ToProperty(this, nameof(SyncedToGitFlash));
         }
     }
 }

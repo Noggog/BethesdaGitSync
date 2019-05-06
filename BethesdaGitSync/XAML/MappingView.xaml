@@ -38,6 +38,29 @@
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="8" />
             </Grid.ColumnDefinitions>
+            <Grid.Style>
+                <Style TargetType="Grid">
+                    <Style.Resources>
+                        <Storyboard x:Key="flashAnimation">
+                            <ColorAnimation
+                                Storyboard.TargetProperty="(Grid.Background).(SolidColorBrush.Color)"
+                                From="White"
+                                Duration="0:0:0.5">
+                                <ColorAnimation.EasingFunction>
+                                    <CubicEase />
+                                </ColorAnimation.EasingFunction>
+                            </ColorAnimation>
+                        </Storyboard>
+                    </Style.Resources>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding Flash}" Value="True">
+                            <DataTrigger.EnterActions>
+                                <BeginStoryboard Name="flash" Storyboard="{StaticResource flashAnimation}" />
+                            </DataTrigger.EnterActions>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Grid.Style>
             <Rectangle
                 Grid.Column="0"
                 DataContext="{Binding BinaryStatus}"
