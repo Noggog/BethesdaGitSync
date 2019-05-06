@@ -19,7 +19,10 @@
     mc:Ignorable="d">
     <Controls:MetroWindow.RightWindowCommands>
         <Controls:WindowCommands>
-            <Button Command="{Binding HelpCommand}" ToolTip="Help and About Information">
+            <Button
+                Command="{Binding HelpCommand}"
+                Focusable="False"
+                ToolTip="Help and About Information">
                 <icon:PackIconMaterial Kind="HelpCircle" />
             </Button>
         </Controls:WindowCommands>
@@ -33,9 +36,9 @@
                 <Style.Resources>
                     <Storyboard x:Key="flashAnimation">
                         <ColorAnimation
-                                Storyboard.TargetProperty="(Button.Background).(SolidColorBrush.Color)"
-                                From="White"
-                                Duration="0:0:0.5">
+                            Storyboard.TargetProperty="(Button.Background).(SolidColorBrush.Color)"
+                            From="White"
+                            Duration="0:0:0.5">
                             <ColorAnimation.EasingFunction>
                                 <CubicEase />
                             </ColorAnimation.EasingFunction>
@@ -57,9 +60,9 @@
                 <Style.Resources>
                     <Storyboard x:Key="flashAnimation">
                         <ColorAnimation
-                                Storyboard.TargetProperty="(Button.Background).(SolidColorBrush.Color)"
-                                From="White"
-                                Duration="0:0:0.5">
+                            Storyboard.TargetProperty="(Button.Background).(SolidColorBrush.Color)"
+                            From="White"
+                            Duration="0:0:0.5">
                             <ColorAnimation.EasingFunction>
                                 <CubicEase />
                             </ColorAnimation.EasingFunction>
@@ -113,6 +116,7 @@
                 Grid.Column="2"
                 BorderThickness="0"
                 DisplayMemberPath="Settings.Nickname"
+                Focusable="False"
                 ItemsSource="{Binding Groupings}"
                 SelectedValue="{Binding SelectedGroup}"
                 ToolTip="Currently selected sync group" />
@@ -128,14 +132,13 @@
                 ItemsSource="{Binding SelectedGroup.Mappings}"
                 SelectionMode="Extended">
                 <ListBox.ItemContainerStyle>
-                    <Style BasedOn="{StaticResource MetroListBoxItem}" TargetType="{x:Type ListBoxItem}">
-                        <Setter Property="Padding" Value="0" />
+                    <Style BasedOn="{StaticResource MainListBoxItemStyle}" TargetType="{x:Type ListBoxItem}">
                         <Setter Property="IsSelected" Value="{Binding IsSelected}" />
                     </Style>
                 </ListBox.ItemContainerStyle>
                 <ListBox.ItemTemplate>
                     <DataTemplate>
-                        <local:MappingView />
+                        <local:MappingView Focusable="False" />
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>

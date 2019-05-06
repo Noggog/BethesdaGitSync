@@ -81,7 +81,8 @@
                 HorizontalAlignment="Right"
                 Background="Transparent"
                 BorderThickness="0"
-                Command="{Binding OpenSettingsCommand}">
+                Command="{Binding OpenSettingsCommand}"
+                Focusable="False">
                 <Button.Style>
                     <Style BasedOn="{StaticResource NoBackgroundButtonStyle}" TargetType="Button">
                         <Style.Triggers>
