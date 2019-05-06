@@ -62,7 +62,8 @@ namespace BethesdaGitSync
         private readonly ObservableAsPropertyHelper<bool> _Flash;
         public bool Flash => _Flash.Value;
 
-        public string BackupPath { get; }
+        private readonly ObservableAsPropertyHelper<string> _BackupPath;
+        public string BackupPath => _BackupPath.Value;
 
         public MappingVM(Mapping mapping)
         {
@@ -104,7 +105,9 @@ namespace BethesdaGitSync
             _Flash = ObservableUtility.FlipFlop(flashSubj, TimeSpan.FromMilliseconds(400))
                 .ToProperty(this, nameof(Flash));
 
-            this.BackupPath = Path.Combine(MainVM.BackupPath, this.Nickname);
+            this._BackupPath = this.WhenAny(x => x.Nickname)
+                .Select(nickname => nickname == null ? MainVM.BackupPath : Path.Combine(MainVM.BackupPath, nickname))
+                .ToProperty(this, nameof(BackupPath));
         }
 
         private static string ConstructErrorMessage(GitConversionUtility.Error err, FilePath binaryPath, string sourcePath)
