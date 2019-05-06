@@ -1,4 +1,4 @@
-﻿using DynamicData;
+using DynamicData;
 using DynamicData.Binding;
 using Noggog.WPF;
 using ReactiveUI;
@@ -46,9 +46,24 @@ namespace BethesdaGitSync
 
         public MainVM(MainWindow window)
         {
+            // Create sub objects
             Instance = this;
             this.Settings = Settings.Create_Xml(SettingsPath);
             this.MappingEditorVM = new MappingSettingsEditorVM();
+
+            // Some commands
+            this.AddCommand = ReactiveCommand.Create(
+                execute: () =>
+                {
+                    this.MappingEditorVM.Target(
+                        new MappingVM(
+                            new Mapping()),
+                        newItem: true);
+                });
+            this.HelpCommand = ReactiveCommand.Create(
+                execute: () => { });
+
+            // Add default group if there is none
             if (this.Settings.Groupings.Count == 0)
             {
                 this.Settings.Groupings.Add(new Grouping()
@@ -56,6 +71,8 @@ namespace BethesdaGitSync
                     Nickname = "Default"
                 });
             }
+
+            // Populate Group VMs
             this.Settings.Groupings.Connect()
                 .ObserveOn(RxApp.MainThreadScheduler)
                 .Transform(g => new GroupingVM(g))
@@ -74,16 +91,6 @@ namespace BethesdaGitSync
                         this.SelectedGroup = tup.First;
                     }
                 });
-            this.AddCommand = ReactiveCommand.Create(
-                execute: () =>
-                {
-                    this.MappingEditorVM.Target(
-                        new MappingVM(
-                            new Mapping()),
-                        newItem: true);
-                });
-            this.HelpCommand = ReactiveCommand.Create(
-                execute: () => { });
 
             // Save to disk when app closing
             window.Closed += (a, b) =>
@@ -91,6 +98,7 @@ namespace BethesdaGitSync
                 this.Settings.Write_Xml(SettingsPath);
             };
 
+            // Sync commands
             this.SyncToGitCommand = ReactiveCommand.CreateFromTask(
                 execute: async () =>
                 {
@@ -142,6 +150,7 @@ namespace BethesdaGitSync
                     .Switch()
                     .Select(c => c > 0));
 
+            // Flash signals
             _SyncedToBinaryFlash = ObservableUtility.FlipFlop(_syncedToBinary, TimeSpan.FromMilliseconds(400))
                 .ToProperty(this, nameof(SyncedToBinaryFlash));
             _SyncedToGitFlash = ObservableUtility.FlipFlop(_syncedToGit, TimeSpan.FromMilliseconds(400))
