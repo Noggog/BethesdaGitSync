@@ -14,6 +14,7 @@ using System.Reactive.Subjects;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using Splat;
 
 namespace BethesdaGitSync
 {
@@ -25,7 +26,7 @@ namespace BethesdaGitSync
         Success
     }
 
-    public class MappingVM : ReactiveObject
+    public class MappingVM : ReactiveObject, IEnableLogger
     {
         public Mapping Mapping { get; }
 
@@ -131,6 +132,7 @@ namespace BethesdaGitSync
         {
             try
             {
+                this.Log().Write($"Syncing {this.Nickname} to git.", LogLevel.Info);
                 var err = await GitConversionUtility.ConvertToFolder(
                     this.Mapping.BinaryPath,
                     this.Mapping.FolderPath,
@@ -138,6 +140,7 @@ namespace BethesdaGitSync
                     checkCorrectness: true,
                     backupFolder: this.BackupPath);
                 this.LastFolderError = ConstructErrorMessage(err, this.Mapping.BinaryPath, this.Mapping.FolderPath.Path);
+                this.Log().Write($"Synced {this.Nickname} to git: {this.LastFolderError}", LogLevel.Info);
             }
             catch (Exception ex)
             {
@@ -150,6 +153,7 @@ namespace BethesdaGitSync
         {
             try
             {
+                this.Log().Write($"Syncing {this.Nickname} to binary.", LogLevel.Info);
                 var err = await GitConversionUtility.ConvertToBinary(
                     this.Mapping.FolderPath,
                     this.Mapping.BinaryPath,
@@ -157,6 +161,7 @@ namespace BethesdaGitSync
                     checkCorrectness: true,
                     backupFolder: this.BackupPath);
                 this.LastBinaryError = ConstructErrorMessage(err, this.Mapping.BinaryPath, this.Mapping.FolderPath.Path);
+                this.Log().Write($"Synced {this.Nickname} to binary: {this.LastBinaryError}", LogLevel.Info);
             }
             catch (Exception ex)
             {
