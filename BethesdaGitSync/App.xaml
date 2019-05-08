@@ -4,7 +4,8 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
     xmlns:local="clr-namespace:BethesdaGitSync"
-    xmlns:options="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options">
+    xmlns:options="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options"
+    StartupUri="XAML/MainWindow.xaml">
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
