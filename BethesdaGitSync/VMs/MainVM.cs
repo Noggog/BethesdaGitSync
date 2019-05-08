@@ -3,9 +3,12 @@ using DynamicData.Binding;
 using Noggog.WPF;
 using ReactiveUI;
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reactive;
+using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Text;
@@ -15,7 +18,7 @@ using System.Windows.Input;
 
 namespace BethesdaGitSync
 {
-    public class MainVM : ReactiveObject
+    public class MainVM : ViewModel
     {
         // Static constants
         public static MainVM Instance { get; private set; }
@@ -39,10 +42,16 @@ namespace BethesdaGitSync
         // Commands
         public ICommand AddCommand { get; }
         public ICommand HelpCommand { get; }
-        public ICommand SyncToGitCommand { get; }
-        public ICommand SyncToBinaryCommand { get; }
+        public ReactiveCommand<Unit, Unit> SyncToGitCommand { get; }
+        public ReactiveCommand<Unit, Unit> SyncToBinaryCommand { get; }
+        public ReactiveCommand<Unit, Unit> SyncAllToGitCommand { get; }
+        public ReactiveCommand<Unit, Unit> SyncAllToBinaryCommand { get; }
 
         public MappingSettingsEditorVM MappingEditorVM { get; }
+
+        public MainVM()
+        {
+        }
 
         public MainVM(MainWindow window)
         {
@@ -99,62 +108,84 @@ namespace BethesdaGitSync
             };
 
             // Sync commands
+            IObservable<bool> anySelected = this.WhenAny(x => x.SelectedGroup.SelectedMappings.CountChanged)
+                .Switch()
+                .Select(c => c > 0)
+                .Publish()
+                .RefCount();
             this.SyncToGitCommand = ReactiveCommand.CreateFromTask(
-                execute: async () =>
-                {
-                    var toSync = this.SelectedGroup?.SelectedMappings.ToArray();
-                    if (toSync == null) return;
-                    await Task.Run(async () =>
-                    {
-                        await Task.WhenAll(toSync.Select(item =>
-                        {
-                            return Task.Run(async () =>
-                            {
-                                await item.SyncToGit();
-                                GC.Collect();
-                            });
-                        }));
-                        _syncedToGit.OnNext(Unit.Default);
-                    });
-                },
-                canExecute: this.WhenAny(x => x.SelectedGroup.SelectedMappings.CountChanged)
-                    .Switch()
-                    .Select(c => c > 0));
-
+                execute: () => SyncToGit(this.SelectedGroup?.SelectedMappings.ToArray()),
+                canExecute: anySelected);
+            window.Events().KeyDown
+                .Keybind(Key.G, ModifierKeys.Control)
+                .InvokeCommand(this.SyncToGitCommand)
+                .DisposeWith(this.CompositeDisposable);
             this.SyncToBinaryCommand = ReactiveCommand.CreateFromTask(
-                execute: async () =>
-                {
-                    var toSync = this.SelectedGroup?.SelectedMappings.ToArray();
-                    if (toSync == null) return;
-                    await Task.Run(async () =>
-                    {
-                        await Task.WhenAll(toSync.Select(item =>
-                        {
-                            return Task.Run(async () =>
-                            {
-                                try
-                                {
-                                    await item.SyncToBinary();
-                                    GC.Collect();
-                                }
-                                catch (Exception ex)
-                                {
-                                    item.LastBinaryError = ex.Message;
-                                }
-                            });
-                        }));
-                        _syncedToBinary.OnNext(Unit.Default);
-                    });
-                },
-                canExecute: this.WhenAny(x => x.SelectedGroup.SelectedMappings.CountChanged)
-                    .Switch()
-                    .Select(c => c > 0));
+                execute: () => SyncToBinary(this.SelectedGroup?.SelectedMappings.ToArray()),
+                canExecute: anySelected);
+            window.Events().KeyDown
+                .Keybind(Key.B, ModifierKeys.Control)
+                .InvokeCommand(this.SyncToBinaryCommand)
+                .DisposeWith(this.CompositeDisposable);
+            this.SyncAllToGitCommand = ReactiveCommand.CreateFromTask(
+                execute: () => SyncToGit(this.SelectedGroup?.Mappings.ToArray()));
+            window.Events().KeyDown
+                .Keybind(Key.G, ModifierKeys.Control | ModifierKeys.Shift)
+                .InvokeCommand(this.SyncAllToGitCommand)
+                .DisposeWith(this.CompositeDisposable);
+            this.SyncAllToBinaryCommand = ReactiveCommand.CreateFromTask(
+                execute: () => SyncToBinary(this.SelectedGroup?.Mappings.ToArray()));
+            window.Events().KeyDown
+                .Keybind(Key.B, ModifierKeys.Control | ModifierKeys.Shift)
+                .InvokeCommand(this.SyncAllToBinaryCommand)
+                .DisposeWith(this.CompositeDisposable);
 
             // Flash signals
-            _SyncedToBinaryFlash = ObservableUtility.FlipFlop(_syncedToBinary, TimeSpan.FromMilliseconds(400))
+            _SyncedToBinaryFlash = WPFObservableUtility.FlipFlop(_syncedToBinary, TimeSpan.FromMilliseconds(400))
                 .ToProperty(this, nameof(SyncedToBinaryFlash));
-            _SyncedToGitFlash = ObservableUtility.FlipFlop(_syncedToGit, TimeSpan.FromMilliseconds(400))
+            _SyncedToGitFlash = WPFObservableUtility.FlipFlop(_syncedToGit, TimeSpan.FromMilliseconds(400))
                 .ToProperty(this, nameof(SyncedToGitFlash));
+        }
+
+        private async Task SyncToGit(IEnumerable<MappingVM> toSync)
+        {
+            if (toSync == null) return;
+            await Task.Run(async () =>
+            {
+                await Task.WhenAll(toSync.Select(item =>
+                {
+                    return Task.Run(async () =>
+                    {
+                        await item.SyncToGit();
+                        GC.Collect();
+                    });
+                }));
+                _syncedToGit.OnNext(Unit.Default);
+            });
+        }
+
+        private async Task SyncToBinary(IEnumerable<MappingVM> toSync)
+        {
+            if (toSync == null) return;
+            await Task.Run(async () =>
+            {
+                await Task.WhenAll(toSync.Select(item =>
+                {
+                    return Task.Run(async () =>
+                    {
+                        try
+                        {
+                            await item.SyncToBinary();
+                            GC.Collect();
+                        }
+                        catch (Exception ex)
+                        {
+                            item.LastBinaryError = ex.Message;
+                        }
+                    });
+                }));
+                _syncedToBinary.OnNext(Unit.Default);
+            });
         }
     }
 }

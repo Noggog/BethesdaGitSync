@@ -2,10 +2,10 @@
    <ParentRepos>
       <RepoListing>
          <Nickname>CSharpExt</Nickname>
-         <Sha>c56036ea7c18033d133816fdcf1cb19a0a442661</Sha>
+         <Sha>5006e585ab21b49f83c3ea284cba9f510fa61228</Sha>
          <Path>../CSharpExt</Path>
-         <CommitDate>05-06-2019 00:04:10</CommitDate>
-         <Description>ShowSelectedInExplorer helper class</Description>
+         <CommitDate>05-07-2019 23:11:51</CommitDate>
+         <Description>ObservableWPF keybind extensions</Description>
          <Author>Justin Swanson</Author>
       </RepoListing>
       <RepoListing>

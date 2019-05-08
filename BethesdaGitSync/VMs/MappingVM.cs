@@ -102,7 +102,7 @@ namespace BethesdaGitSync
                 this.WhenAny(x => x.LastFolderError))
                 .ToProperty(this, nameof(FolderStatus));
 
-            _Flash = ObservableUtility.FlipFlop(flashSubj, TimeSpan.FromMilliseconds(400))
+            _Flash = WPFObservableUtility.FlipFlop(flashSubj, TimeSpan.FromMilliseconds(400))
                 .ToProperty(this, nameof(Flash));
 
             this._BackupPath = this.WhenAny(x => x.Nickname)
