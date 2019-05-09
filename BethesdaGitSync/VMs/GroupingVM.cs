@@ -17,6 +17,9 @@ namespace BethesdaGitSync
         private ObservableCollectionExtended<MappingVM> _Mappings { get; } = new ObservableCollectionExtended<MappingVM>();
         public IObservableCollection<MappingVM> Mappings => _Mappings;
 
+        private readonly ObservableAsPropertyHelper<bool> _Empty;
+        public bool Empty => _Empty.Value;
+
         public GroupingVM(Grouping grouping)
         {
             bool first = true;
@@ -40,6 +43,11 @@ namespace BethesdaGitSync
                 .AutoRefresh(m => m.IsSelected)
                 .Filter(m => m.IsSelected)
                 .AsObservableList();
+
+            this._Empty = this.Settings.Mappings.Connect()
+                .CollectionCount()
+                .Select(c => c == 0)
+                .ToProperty(this, nameof(Empty));
         }
     }
 }

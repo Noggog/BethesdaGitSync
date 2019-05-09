@@ -142,6 +142,19 @@
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>
+            <TextBlock
+                Grid.Row="1"
+                Grid.Column="1"
+                Grid.ColumnSpan="3"
+                Margin="15"
+                VerticalAlignment="Bottom"
+                FontSize="16"
+                FontWeight="Bold"
+                Foreground="White"
+                Text="No sync mappings exist&#x0a;Click add to get started"
+                TextAlignment="Right"
+                TextWrapping="Wrap"
+                Visibility="{Binding SelectedGroup.Empty, Converter={StaticResource VisibilityConverter}}" />
             <Button
                 Grid.Row="0"
                 Grid.Column="3"
