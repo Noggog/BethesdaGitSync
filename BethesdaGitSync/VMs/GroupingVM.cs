@@ -19,11 +19,20 @@ namespace BethesdaGitSync
 
         public GroupingVM(Grouping grouping)
         {
+            bool first = true;
             this.Settings = grouping;
             this.SelectedMappings = grouping.Mappings
                 .Connect()
                 .ObserveOn(RxApp.MainThreadScheduler)
-                .Transform(m => new MappingVM(m))
+                .Transform(m =>
+                {
+                    var ret = new MappingVM(m)
+                    {
+                        IsSelected = first
+                    };
+                    first = false;
+                    return ret;
+                })
                 .DisposeMany()
                 // Bind to visible mappings for GUI
                 .Bind(this._Mappings)
