@@ -33,11 +33,7 @@ namespace BethesdaGitSync
 
         // Signals
         private Subject<Unit> _syncedToGit = new Subject<Unit>();
-        private readonly ObservableAsPropertyHelper<bool> _SyncedToGitFlash;
-        public bool SyncedToGitFlash => _SyncedToGitFlash.Value;
         private Subject<Unit> _syncedToBinary = new Subject<Unit>();
-        private readonly ObservableAsPropertyHelper<bool> _SyncedToBinaryFlash;
-        public bool SyncedToBinaryFlash => _SyncedToBinaryFlash.Value;
 
         // Commands
         public ICommand AddCommand { get; }
@@ -46,6 +42,12 @@ namespace BethesdaGitSync
         public ReactiveCommand<Unit, Unit> SyncToBinaryCommand { get; }
         public ReactiveCommand<Unit, Unit> SyncAllToGitCommand { get; }
         public ReactiveCommand<Unit, Unit> SyncAllToBinaryCommand { get; }
+
+        private readonly ObservableAsPropertyHelper<bool> _SyncingGit;
+        public bool SyncingGit => _SyncingGit.Value;
+
+        private readonly ObservableAsPropertyHelper<bool> _SyncingBinary;
+        public bool SyncingBinary => _SyncingBinary.Value;
 
         public MappingSettingsEditorVM MappingEditorVM { get; }
 
@@ -139,12 +141,16 @@ namespace BethesdaGitSync
                 .Keybind(Key.B, ModifierKeys.Control | ModifierKeys.Shift)
                 .InvokeCommand(this.SyncAllToBinaryCommand)
                 .DisposeWith(this.CompositeDisposable);
-
-            // Flash signals
-            _SyncedToBinaryFlash = WPFObservableUtility.FlipFlop(_syncedToBinary, TimeSpan.FromMilliseconds(400))
-                .ToProperty(this, nameof(SyncedToBinaryFlash));
-            _SyncedToGitFlash = WPFObservableUtility.FlipFlop(_syncedToGit, TimeSpan.FromMilliseconds(400))
-                .ToProperty(this, nameof(SyncedToGitFlash));
+            _SyncingGit = Observable.CombineLatest(
+                    this.SyncToGitCommand.IsExecuting,
+                    this.SyncAllToGitCommand.IsExecuting,
+                    resultSelector: (s, a) => s || a)
+                .ToProperty(this, nameof(SyncingGit));
+            _SyncingBinary = Observable.CombineLatest(
+                    this.SyncToBinaryCommand.IsExecuting,
+                    this.SyncAllToBinaryCommand.IsExecuting,
+                    resultSelector: (s, a) => s || a)
+                .ToProperty(this, nameof(SyncingBinary));
 
             // Add delete keybind
             window.Events().KeyDown

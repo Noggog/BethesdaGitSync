@@ -29,54 +29,19 @@
     </Controls:MetroWindow.RightWindowCommands>
     <Grid>
         <Grid.Resources>
-            <Style
-                x:Key="GitFlashButtonStyle"
-                BasedOn="{StaticResource MainButtonStyle}"
-                TargetType="Button">
-                <Style.Resources>
-                    <Storyboard x:Key="flashAnimation">
-                        <ColorAnimation
-                            Storyboard.TargetProperty="(Button.Background).(SolidColorBrush.Color)"
-                            From="White"
-                            Duration="0:0:0.5">
-                            <ColorAnimation.EasingFunction>
-                                <CubicEase />
-                            </ColorAnimation.EasingFunction>
-                        </ColorAnimation>
-                    </Storyboard>
-                </Style.Resources>
-                <Style.Triggers>
-                    <DataTrigger Binding="{Binding SyncedToGitFlash}" Value="True">
-                        <DataTrigger.EnterActions>
-                            <BeginStoryboard Name="flash" Storyboard="{StaticResource flashAnimation}" />
-                        </DataTrigger.EnterActions>
-                    </DataTrigger>
-                </Style.Triggers>
-            </Style>
-            <Style
-                x:Key="BinaryFlashButtonStyle"
-                BasedOn="{StaticResource MainButtonStyle}"
-                TargetType="Button">
-                <Style.Resources>
-                    <Storyboard x:Key="flashAnimation">
-                        <ColorAnimation
-                            Storyboard.TargetProperty="(Button.Background).(SolidColorBrush.Color)"
-                            From="White"
-                            Duration="0:0:0.5">
-                            <ColorAnimation.EasingFunction>
-                                <CubicEase />
-                            </ColorAnimation.EasingFunction>
-                        </ColorAnimation>
-                    </Storyboard>
-                </Style.Resources>
-                <Style.Triggers>
-                    <DataTrigger Binding="{Binding SyncedToBinaryFlash}" Value="True">
-                        <DataTrigger.EnterActions>
-                            <BeginStoryboard Name="flash" Storyboard="{StaticResource flashAnimation}" />
-                        </DataTrigger.EnterActions>
-                    </DataTrigger>
-                </Style.Triggers>
-            </Style>
+            <Storyboard x:Key="FlashAnimation">
+                <ColorAnimation
+                    Storyboard.TargetProperty="(Button.Background).(SolidColorBrush.Color)"
+                    From="#a970d3"
+                    Duration="0:0:0.5">
+                    <ColorAnimation.EasingFunction>
+                        <CubicEase />
+                    </ColorAnimation.EasingFunction>
+                </ColorAnimation>
+            </Storyboard>
+            <Color x:Key="RunningColor">#6310a0</Color>
+            <SolidColorBrush x:Key="RunningColorBrush" Color="{StaticResource RunningColor}" />
+            <Color x:Key="RunningBackgroundColor">#34283d</Color>
         </Grid.Resources>
         <Grid>
             <Grid.ColumnDefinitions>
@@ -97,20 +62,59 @@
                 Grid.ColumnSpan="2"
                 Command="{Binding SyncToBinaryCommand}"
                 Focusable="False"
-                Style="{StaticResource BinaryFlashButtonStyle}"
                 ToolTip="Sync selected mappings from Git folder representation to Bethesda mod format.">
+                <Button.Style>
+                    <Style BasedOn="{StaticResource NoDisableButtonStyle}" TargetType="Button">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding SyncingBinary}" Value="True">
+                                <DataTrigger.ExitActions>
+                                    <BeginStoryboard Storyboard="{StaticResource FlashAnimation}" />
+                                </DataTrigger.ExitActions>
+                                <Setter Property="Background">
+                                    <Setter.Value>
+                                        <RadialGradientBrush Center="0.75,1" GradientOrigin="0.75,1" RadiusX="1" RadiusY="1.2">
+                                            <GradientStop Offset="0" Color="{StaticResource RunningColor}" />
+                                            <GradientStop Offset="0.3" Color="{StaticResource RunningColor}" />
+                                            <GradientStop Offset="1" Color="{StaticResource RunningBackgroundColor}" />
+                                        </RadialGradientBrush>
+                                    </Setter.Value>
+                                </Setter>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
                 <icon:PackIconOcticons Kind="FileBinary" />
             </Button>
             <Button
                 Grid.Row="1"
                 Grid.RowSpan="2"
                 Grid.Column="0"
-                Margin="0,-1,0,0"
+                Margin="0,-1.5,0,0"
                 BorderThickness="1,0"
                 Command="{Binding SyncToBinaryCommand}"
                 Focusable="False"
-                Style="{StaticResource BinaryFlashButtonStyle}"
-                ToolTip="Sync selected mappings from Git folder representation to Bethesda mod format." />
+                ToolTip="Sync selected mappings from Git folder representation to Bethesda mod format.">
+                <Button.Style>
+                    <Style BasedOn="{StaticResource NoDisableButtonStyle}" TargetType="Button">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding SyncingBinary}" Value="True">
+                                <DataTrigger.ExitActions>
+                                    <BeginStoryboard Storyboard="{StaticResource FlashAnimation}" />
+                                </DataTrigger.ExitActions>
+                                <Setter Property="Background">
+                                    <Setter.Value>
+                                        <LinearGradientBrush StartPoint="1,0" EndPoint="0,0">
+                                            <GradientStop Offset="0" Color="{StaticResource RunningColor}" />
+                                            <GradientStop Offset="0.2" Color="{StaticResource RunningColor}" />
+                                            <GradientStop Offset="1" Color="{StaticResource RunningBackgroundColor}" />
+                                        </LinearGradientBrush>
+                                    </Setter.Value>
+                                </Setter>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+            </Button>
             <ComboBox
                 Grid.Row="0"
                 Grid.Column="2"
@@ -161,20 +165,59 @@
                 Grid.ColumnSpan="2"
                 Command="{Binding SyncToGitCommand}"
                 Focusable="False"
-                Style="{StaticResource GitFlashButtonStyle}"
                 ToolTip="Sync selected mappings from Bethesda mod format to Git folder representation.">
+                <Button.Style>
+                    <Style BasedOn="{StaticResource NoDisableButtonStyle}" TargetType="Button">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding SyncingGit}" Value="True">
+                                <DataTrigger.ExitActions>
+                                    <BeginStoryboard Storyboard="{StaticResource FlashAnimation}" />
+                                </DataTrigger.ExitActions>
+                                <Setter Property="Background">
+                                    <Setter.Value>
+                                        <RadialGradientBrush Center="0.25,1" GradientOrigin="0.25,1" RadiusX="1" RadiusY="1.2">
+                                            <GradientStop Offset="0" Color="{StaticResource RunningColor}" />
+                                            <GradientStop Offset="0.3" Color="{StaticResource RunningColor}" />
+                                            <GradientStop Offset="1" Color="{StaticResource RunningBackgroundColor}" />
+                                        </RadialGradientBrush>
+                                    </Setter.Value>
+                                </Setter>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
                 <icon:PackIconMaterial Kind="Git" />
             </Button>
             <Button
                 Grid.Row="1"
                 Grid.RowSpan="2"
                 Grid.Column="4"
-                Margin="0,-1,0,0"
+                Margin="0,-1.5,0,0"
                 BorderThickness="1,0"
                 Command="{Binding SyncToGitCommand}"
                 Focusable="False"
-                Style="{StaticResource GitFlashButtonStyle}"
-                ToolTip="Sync selected mappings from Bethesda mod format to Git folder representation." />
+                ToolTip="Sync selected mappings from Bethesda mod format to Git folder representation.">
+                <Button.Style>
+                    <Style BasedOn="{StaticResource NoDisableButtonStyle}" TargetType="Button">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding SyncingGit}" Value="True">
+                                <DataTrigger.ExitActions>
+                                    <BeginStoryboard Storyboard="{StaticResource FlashAnimation}" />
+                                </DataTrigger.ExitActions>
+                                <Setter Property="Background">
+                                    <Setter.Value>
+                                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                                            <GradientStop Offset="0" Color="{StaticResource RunningColor}" />
+                                            <GradientStop Offset="0.2" Color="{StaticResource RunningColor}" />
+                                            <GradientStop Offset="1" Color="{StaticResource RunningBackgroundColor}" />
+                                        </LinearGradientBrush>
+                                    </Setter.Value>
+                                </Setter>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+            </Button>
             <Border
                 Grid.Row="2"
                 Grid.Column="1"
