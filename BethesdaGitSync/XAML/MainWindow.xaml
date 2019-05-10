@@ -129,7 +129,7 @@
                 Grid.Row="1"
                 Grid.Column="1"
                 Grid.ColumnSpan="3"
-                ItemsSource="{Binding SelectedGroup.Mappings}"
+                ItemsSource="{Binding SelectedGroup.MappingsView}"
                 SelectionMode="Extended">
                 <ListBox.ItemContainerStyle>
                     <Style BasedOn="{StaticResource MainListBoxItemStyle}" TargetType="{x:Type ListBoxItem}">

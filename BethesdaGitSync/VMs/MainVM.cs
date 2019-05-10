@@ -145,6 +145,19 @@ namespace BethesdaGitSync
                 .ToProperty(this, nameof(SyncedToBinaryFlash));
             _SyncedToGitFlash = WPFObservableUtility.FlipFlop(_syncedToGit, TimeSpan.FromMilliseconds(400))
                 .ToProperty(this, nameof(SyncedToGitFlash));
+
+            // Add delete keybind
+            window.Events().KeyDown
+                .Keybind(Key.Delete)
+                .Subscribe(q =>
+                {
+                    var group = this.SelectedGroup;
+                    this.SelectedGroup.Settings.Mappings.RemoveMany(
+                        this.SelectedGroup.SelectedMappings
+                            .Select(g => g.Mapping)
+                            .ToArray());
+                        
+                });
         }
 
         private async Task SyncToGit(IEnumerable<MappingVM> toSync)

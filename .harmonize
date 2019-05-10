@@ -2,10 +2,10 @@
    <ParentRepos>
       <RepoListing>
          <Nickname>CSharpExt</Nickname>
-         <Sha>5006e585ab21b49f83c3ea284cba9f510fa61228</Sha>
+         <Sha>8fa46655f51f0016e3ad3ca608bbf849ea8ea3a0</Sha>
          <Path>../CSharpExt</Path>
-         <CommitDate>05-07-2019 23:11:51</CommitDate>
-         <Description>ObservableWPF keybind extensions</Description>
+         <CommitDate>05-09-2019 22:13:28</CommitDate>
+         <Description>ObservableExt.Unit and NotNull.  Made some parameters optional on keybinds</Description>
          <Author>Justin Swanson</Author>
       </RepoListing>
       <RepoListing>
